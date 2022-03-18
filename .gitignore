@@ -1,0 +1,4 @@
+/target
+/Cargo.lock
+/.idea
+/merkle_hash.iml
