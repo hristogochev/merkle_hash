@@ -1,6 +1,6 @@
 /*!
-Crate `merkle_hash` makes it easy to find the Blake3 hash
-of files or entire directories using a Multithreaded Merkle tree algorithm
+Crate `merkle_hash` makes it easy to find the blake3 hash
+of files or entire directories using a multithreaded merkle tree algorithm
 
 # Usage
 

@@ -1,5 +1,5 @@
 # merkle_hash
-Finds the Blake3 hash of files or entire directories using a Multithreaded Merkle tree algorithm
+Finds the blake3 hash of files or entire directories using a multithreaded merkle tree algorithm
 
 ### Documentation
 
