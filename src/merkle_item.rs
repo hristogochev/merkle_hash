@@ -81,7 +81,7 @@ impl MerkleItem {
     ///
     /// let path = PathBuf::from("/root/to/get/paths/from");
     /// let merkle_item = MerkleItem::new(path);
-    /// let single_hash = merkle_item.get_hash();
+    /// let merkle_hash = merkle_item.get_hash();
     /// ```
     pub fn get_hash(&self) -> Option<Hash> {
         let tree = get_paths(&self.path);
