@@ -1,6 +1,6 @@
 [package]
 name = "merkle_hash"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 authors = ["Hristo_Gochev"]
 description = "Finds the blake3 hash of files or entire directories using a multithreaded merkle tree algorithm."
