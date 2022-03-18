@@ -4,8 +4,7 @@ of files or entire directories using a Multithreaded Merkle tree algorithm
 
 # Usage
 
-To use this crate, add `merkle_hash` as a dependency to your project's
-`Cargo.toml`
+To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.toml`
 
 ```toml
 [dependencies]

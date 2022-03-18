@@ -3,12 +3,13 @@ Finds the Blake3 hash of files or entire directories using a Multithreaded Merkl
 
 ### Documentation
 
+```
 [docs.rs/merkle_hash](https://docs.rs/merkle_hash/)
+```
 
 ### Usage
 
-To use this crate, add `merkle_hash` as a dependency to your project's
-`Cargo.toml`:
+To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
