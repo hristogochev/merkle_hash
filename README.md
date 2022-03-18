@@ -24,7 +24,7 @@ use merkle_hash::merkle_item::MerkleItem;
 
 let path = PathBuf::from("/root/to/get/paths/from");
 let merkle_item = MerkleItem::new(path);
-let single_hash = merkle_item.get_hash();
+let merkle_hash = merkle_item.get_hash();
 ```
 
 ### Example: Get the hash of a root directory using the merkle hashing functions
