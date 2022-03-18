@@ -1,5 +1,5 @@
 # merkle_hash
-Finds the blake3 hash of files or entire directories using a multithreaded merkle tree algorithm
+Finds the blake3 hash of files or entire directories using a multithreaded merkle tree algorithm.
 
 ### Documentation
 
@@ -16,7 +16,7 @@ merkle_hash = "1"
 
 ### Example: Get the hash of a root directory using a merkle item
 
-The following code creates a new merkle item with a given root directory path and then uses it to find the hash of that root
+The following code creates a new merkle item with a given root directory path and then uses it to find the hash of that root:
 
 ```rust,no_run
 use std::path::PathBuf;
@@ -29,7 +29,7 @@ let single_hash = merkle_item.get_hash();
 
 ### Example: Get the hash of a root directory using the merkle hashing functions
 
-Using the utility functions instead of a merkle item to find the single hash of a root directory
+Using the utility functions instead of a merkle item to find the single hash of a root directory:
 
 ```rust,no_run
 use std::path::Path;
@@ -44,7 +44,7 @@ let merkle_hash = find_merkle_hash(&hashes);
 
 ### Example: Get the merkle hash of a collection of blake3 hashes
 
-The following code demonstrates how to use the merkle hash function to get the single merkle hash from a few blake3 hashes
+The following code demonstrates how to use the merkle hash function to get the single merkle hash from a few blake3 hashes:
 
 ```rust,no_run
 use std::str::FromStr;
