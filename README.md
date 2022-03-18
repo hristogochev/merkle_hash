@@ -3,9 +3,7 @@ Finds the Blake3 hash of files or entire directories using a Multithreaded Merkl
 
 ### Documentation
 
-```
 [docs.rs/merkle_hash](https://docs.rs/merkle_hash/)
-```
 
 ### Usage
 
