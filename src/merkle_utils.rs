@@ -5,10 +5,30 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
+/// Finds the merkle hash of a file or a directory
+///
+/// - If the provided path is valid, recursively finds the single hash
+/// - If the provided path is invalid, returns None
+///
+/// # Examples
+///
+/// ```
+/// use std::path::Path;
+/// use merkle_hash::merkle_utils::get_merkle_hash;
+///
+/// let path = Path::new("/root/to/get/paths/from");
+/// let merkle_hash = get_merkle_hash(path);
+/// ```
+pub fn get_merkle_hash(path: &Path) -> Option<Hash> {
+    let tree = get_paths(path);
+    let hashes = get_hashes(&tree);
+    find_merkle_hash(&hashes)
+}
+
 /// Finds the hash of a slice of hashes using a merkle tree algorithm in multithreaded mode
 ///
 /// - If the provided slice is empty, returns None
-/// - If the provided slice is not empty, recursively finds the Single hash
+/// - If the provided slice is not empty, recursively finds the single hash
 ///
 /// # Examples
 ///

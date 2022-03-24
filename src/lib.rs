@@ -11,20 +11,18 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 merkle_hash = "1"
 ```
 
-
-# Example: Get the hash of a root directory using a merkle item
-The following code creates a new merkle item with a given root directory path and then uses it to find the hash of that root:
+# Example: Get the hash of a directory using a single function
+The following code shows the simplest way to get the merkle hash of a directory:
 ```
-use std::path::PathBuf;
-use merkle_hash::merkle_item::MerkleItem;
+use std::path::Path;
+use merkle_hash::merkle_utils::get_merkle_hash;
 
-let path = PathBuf::from("/root/to/get/paths/from");
-let merkle_item = MerkleItem::new(path);
-let merkle_hash = merkle_item.get_hash();
+let path = Path::new("/root/to/get/paths/from");
+let merkle_hash = get_merkle_hash(path);
 ```
 
-# Example: Get the hash of a root directory using the merkle hashing functions
-Using the utility functions instead of a merkle item to find the single hash of a root directory:
+# Example: Get the hash of a directory using a combination of the utility functions
+The following code shows the more complicated way to get the merkle hash:
 ```
 use std::path::Path;
 use merkle_hash::{get_paths,get_hashes,find_merkle_hash};
@@ -36,10 +34,9 @@ let merkle_hash = find_merkle_hash(&hashes);
 ```
 
 
-# Example: Get the merkle hash of a collection of blake3 hashes
+# Example: Get the hash of a collection of blake3 hashes
 
 The following code demonstrates how to use the merkle hash function to get the single merkle hash from a few blake3 hashes:
-
 ```
 use std::str::FromStr;
 use blake3::{hash,Hash};
@@ -53,12 +50,25 @@ let hashes = vec![first_hash, second_hash, third_hash, fourth_hash];
 
 let merkle_hash = find_merkle_hash(&hashes);
 ```
+
+
+# Example: Get the hash of a directory using a merkle item
+The following code uses a merkle item to find the merkle hash of a directory,
+you may want to use a merkle item if you want access to more of its functions such as getting all of its direct descendants and more:
+```
+use std::path::PathBuf;
+use merkle_hash::merkle_item::MerkleItem;
+
+let path = PathBuf::from("/root/to/get/paths/from");
+let merkle_item = MerkleItem::new(path);
+let merkle_hash = merkle_item.get_hash();
+```
  */
 
-/// Simplifies the retrieval of hashes
+/// Utility item for managing merkle hashes
 pub mod merkle_item;
-/// Utilities for using merkle hashing
+/// Merkle hashing utility functions
 pub mod merkle_utils;
 
 pub use crate::merkle_item::MerkleItem;
-pub use crate::merkle_utils::{find_merkle_hash, get_hashes, get_paths};
+pub use crate::merkle_utils::{find_merkle_hash, get_hashes, get_merkle_hash, get_paths};

@@ -1,10 +1,10 @@
-use crate::merkle_utils::{find_merkle_hash, get_hashes, get_paths};
+use crate::merkle_utils::{find_merkle_hash, get_hashes, get_merkle_hash, get_paths};
 use blake3::Hash;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 use walkdir::WalkDir;
 
-/// An item that simplifies the retrieval of hashes
+/// Utility item for managing merkle hashes
 pub struct MerkleItem {
     pub path: PathBuf,
 }
@@ -84,8 +84,6 @@ impl MerkleItem {
     /// let merkle_hash = merkle_item.get_hash();
     /// ```
     pub fn get_hash(&self) -> Option<Hash> {
-        let tree = get_paths(&self.path);
-        let hashes = get_hashes(&tree);
-        find_merkle_hash(&hashes)
+        get_merkle_hash(&self.path)
     }
 }
