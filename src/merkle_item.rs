@@ -1,4 +1,4 @@
-use crate::merkle_utils::{find_merkle_hash, get_hashes, get_merkle_hash, get_paths};
+use crate::merkle_utils::get_merkle_hash;
 use blake3::Hash;
 use std::ffi::OsStr;
 use std::path::PathBuf;
