@@ -1,11 +1,11 @@
 use crate::merkle_utils::get_merkle_hash;
 use blake3::Hash;
-use camino::{Utf8Path, Utf8PathBuf};
+use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 /// Utility item for managing merkle hashes
 pub struct MerkleItem {
-    pub path: Utf8PathBuf,
+    pub path: PathBuf,
 }
 
 impl MerkleItem {
@@ -18,7 +18,7 @@ impl MerkleItem {
     ///
     /// let merkle_item = MerkleItem::new("/root/to/get/paths/from");
     /// ```
-    pub fn new(path: impl AsRef<Utf8Path>) -> Self {
+    pub fn new(path: impl AsRef<Path>) -> Self {
         let path = path.as_ref().to_path_buf();
         MerkleItem { path }
     }
@@ -42,7 +42,7 @@ impl MerkleItem {
             .flatten()
             .filter(|entry| entry.path() != self.path)
             .flat_map(|entry| {
-                let path = Utf8Path::from_path(entry.path())?;
+                let path = entry.into_path();
                 Some(MerkleItem::new(path))
             })
             .collect()
@@ -61,7 +61,7 @@ impl MerkleItem {
     /// let name = merkle_item.get_name();
     /// ```
     pub fn get_name(&self) -> Option<&str> {
-        self.path.file_name()
+        self.path.file_name()?.to_str()
     }
     /// Finds the single merkle hash of all descendants of the item
     ///
