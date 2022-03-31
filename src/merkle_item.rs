@@ -1,12 +1,11 @@
 use crate::merkle_utils::get_merkle_hash;
 use blake3::Hash;
-use std::ffi::OsStr;
-use std::path::PathBuf;
+use camino::{Utf8Path, Utf8PathBuf};
 use walkdir::WalkDir;
 
 /// Utility item for managing merkle hashes
 pub struct MerkleItem {
-    pub path: PathBuf,
+    pub path: Utf8PathBuf,
 }
 
 impl MerkleItem {
@@ -15,13 +14,12 @@ impl MerkleItem {
     /// # Examples
     ///
     /// ```
-    /// use std::path::PathBuf;
     /// use merkle_hash::merkle_item::MerkleItem;
     ///
-    /// let path = PathBuf::from("/root/to/get/paths/from");
-    /// let merkle_item = MerkleItem::new(path);
+    /// let merkle_item = MerkleItem::new("/root/to/get/paths/from");
     /// ```
-    pub fn new(path: PathBuf) -> Self {
+    pub fn new(path: impl AsRef<Utf8Path>) -> Self {
+        let path = path.as_ref().to_path_buf();
         MerkleItem { path }
     }
 
@@ -32,11 +30,9 @@ impl MerkleItem {
     /// # Examples
     ///
     /// ```
-    /// use std::path::PathBuf;
     /// use merkle_hash::merkle_item::MerkleItem;
     ///
-    /// let path = PathBuf::from("/root/to/get/paths/from");
-    /// let merkle_item = MerkleItem::new(path);
+    /// let merkle_item = MerkleItem::new("/root/to/get/paths/from");
     /// let children = merkle_item.get_children();
     /// ```
     pub fn get_children(&self) -> Vec<MerkleItem> {
@@ -45,9 +41,9 @@ impl MerkleItem {
             .into_iter()
             .flatten()
             .filter(|entry| entry.path() != self.path)
-            .map(|entry| {
-                let path = entry.path().to_path_buf();
-                MerkleItem::new(path)
+            .flat_map(|entry| {
+                let path = Utf8Path::from_path(entry.path())?;
+                Some(MerkleItem::new(path))
             })
             .collect()
     }
@@ -59,15 +55,13 @@ impl MerkleItem {
     /// # Examples
     ///
     /// ```
-    /// use std::path::PathBuf;
     /// use merkle_hash::merkle_item::MerkleItem;
     ///
-    /// let path = PathBuf::from("/root/to/get/paths/from");
-    /// let merkle_item = MerkleItem::new(path);
+    /// let merkle_item = MerkleItem::new("/root/to/get/paths/from");
     /// let name = merkle_item.get_name();
     /// ```
     pub fn get_name(&self) -> Option<&str> {
-        self.path.file_name().and_then(OsStr::to_str)
+        self.path.file_name()
     }
     /// Finds the single merkle hash of all descendants of the item
     ///
@@ -76,11 +70,9 @@ impl MerkleItem {
     /// # Examples
     ///
     /// ```
-    /// use std::path::PathBuf;
     /// use merkle_hash::merkle_item::MerkleItem;
     ///
-    /// let path = PathBuf::from("/root/to/get/paths/from");
-    /// let merkle_item = MerkleItem::new(path);
+    /// let merkle_item = MerkleItem::new("/root/to/get/paths/from");
     /// let merkle_hash = merkle_item.get_hash();
     /// ```
     pub fn get_hash(&self) -> Option<Hash> {

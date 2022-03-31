@@ -1,8 +1,9 @@
 use blake3::{Hash, Hasher};
+use camino::Utf8PathBuf;
 use rayon::prelude::*;
 use std::collections::BTreeMap;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use walkdir::WalkDir;
 
 /// Finds the merkle hash of a file or a directory
@@ -13,13 +14,11 @@ use walkdir::WalkDir;
 /// # Examples
 ///
 /// ```
-/// use std::path::Path;
 /// use merkle_hash::merkle_utils::get_merkle_hash;
 ///
-/// let path = Path::new("/root/to/get/paths/from");
-/// let merkle_hash = get_merkle_hash(path);
+/// let merkle_hash = get_merkle_hash("/root/to/get/paths/from");
 /// ```
-pub fn get_merkle_hash(path: &Path) -> Option<Hash> {
+pub fn get_merkle_hash(path: impl AsRef<Path>) -> Option<Hash> {
     let tree = get_paths(path);
     let hashes = get_hashes(&tree);
     find_merkle_hash(&hashes)
@@ -89,18 +88,16 @@ pub fn find_merkle_hash(hashes: &[Hash]) -> Option<Hash> {
 /// # Examples
 ///
 /// ```
-/// use std::path::Path;
 /// use merkle_hash::merkle_utils::{get_paths, get_hashes};
 ///
-/// let root = Path::new("/root/to/get/paths/from");
-/// let paths = get_paths(root);
+/// let paths = get_paths("/root/to/get/paths/from");
 /// let hashes = get_hashes(&paths);
 /// ```
-pub fn get_hashes(paths: &BTreeMap<PathBuf, PathBuf>) -> Vec<Hash> {
+pub fn get_hashes(paths: &BTreeMap<Utf8PathBuf, Utf8PathBuf>) -> Vec<Hash> {
     let hashes: Vec<Hash> = paths
         .par_iter()
         .flat_map(|(relative_path, absolute_path)| {
-            let path_str = relative_path.to_str()?;
+            let path_str = relative_path.as_str();
 
             let mut hasher = blake3::Hasher::new();
             hasher.update(path_str.as_bytes());
@@ -126,18 +123,16 @@ pub fn get_hashes(paths: &BTreeMap<PathBuf, PathBuf>) -> Vec<Hash> {
 /// # Examples
 ///
 /// ```
-/// use std::path::Path;
 /// use merkle_hash::merkle_utils::get_paths;
 ///
-/// let root = Path::new("/root/to/get/paths/from");
-/// let paths = get_paths(root);
+/// let paths = get_paths("/root/to/get/paths/from");
 /// ```
-pub fn get_paths(root: &Path) -> BTreeMap<PathBuf, PathBuf> {
-    let paths: BTreeMap<PathBuf, PathBuf> = WalkDir::new(root)
+pub fn get_paths(root: impl AsRef<Path>) -> BTreeMap<Utf8PathBuf, Utf8PathBuf> {
+    let paths: BTreeMap<Utf8PathBuf, Utf8PathBuf> = WalkDir::new(&root)
         .into_iter()
         .flatten()
         .flat_map(|entry| {
-            let absolute_path = entry.path().to_path_buf();
+            let absolute_path = Utf8PathBuf::from_path_buf(entry.into_path()).ok()?;
             let relative_path = absolute_path.strip_prefix(root).ok()?.to_path_buf();
             Some((relative_path, absolute_path))
         })
