@@ -132,7 +132,7 @@ pub fn get_paths(root: impl AsRef<Path>) -> BTreeMap<PathBuf, PathBuf> {
         .flatten()
         .flat_map(|entry| {
             let absolute_path = entry.into_path();
-            let relative_path = absolute_path.strip_prefix(root).ok()?.to_path_buf();
+            let relative_path = absolute_path.strip_prefix(&root).ok()?.to_path_buf();
             Some((relative_path, absolute_path))
         })
         .collect();
