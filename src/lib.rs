@@ -72,3 +72,15 @@ pub use crate::merkle_tree::MerkleTree;
 pub use crate::merkle_utils::{find_merkle_hash, get_hashes, get_hashes_no_paths, get_paths};
 pub use blake3;
 pub use rayon;
+
+#[cfg(test)]
+mod tests {
+    use crate::merkle_utils::NewMerkleNode;
+
+    #[test]
+    fn tester() {
+        let node = NewMerkleNode::new("/home/scotty/Desktop").unwrap();
+
+        println!("{:?}", node.hash);
+    }
+}

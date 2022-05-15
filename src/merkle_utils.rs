@@ -1,9 +1,12 @@
 use crate::merkle_node::MerkleNode;
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use blake3::{Hash, Hasher};
+use parking_lot::Mutex;
 use rayon::prelude::*;
-use std::collections::{BTreeMap, BTreeSet};
+use std::cmp::Ordering;
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fs;
+use std::fs::read_dir;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
@@ -138,4 +141,102 @@ pub fn get_paths(root: impl AsRef<Path>) -> Result<BTreeMap<PathBuf, PathBuf>> {
             Ok((relative_path, absolute_path))
         })
         .collect()
+}
+
+#[derive(Eq, PartialEq, Debug)]
+pub struct NewMerkleNode {
+    pub absolute_path: PathBuf,
+    pub relative_path: PathBuf,
+    pub children: BTreeSet<NewMerkleNode>,
+    pub hash: Hash,
+}
+
+impl NewMerkleNode {
+    pub fn new(path: impl AsRef<Path>) -> Result<Self> {
+        let root = path.as_ref();
+        let path = root.to_path_buf();
+        Self::get_node(root, path)
+    }
+    fn get_node(root: &Path, absolute_path: PathBuf) -> Result<NewMerkleNode> {
+        let children: BTreeSet<NewMerkleNode> = if absolute_path.is_dir() {
+            let children: Result<BTreeSet<NewMerkleNode>> = read_dir(&absolute_path)?
+                .par_bridge()
+                .map(|entry| {
+                    let child_absolute_path = entry?.path();
+                    let child = Self::get_node(root, child_absolute_path)?;
+                    Ok(child)
+                })
+                .collect();
+            children?
+        } else {
+            BTreeSet::new()
+        };
+
+        let relative_path = absolute_path.strip_prefix(root)?.to_path_buf();
+
+        let relative_path_str = relative_path
+            .to_str()
+            .with_context(|| format!("Could not compute hash for: {}", relative_path.display()))?;
+
+        let mut hasher = Hasher::new();
+        hasher.update(relative_path_str.as_bytes());
+
+        if absolute_path.is_dir() {
+            let child_hashes: Vec<Hash> = children.iter().map(|child| child.hash).collect();
+            if let Some(children_hash) = find_merkle_hash(&child_hashes) {
+                hasher.update(children_hash.as_bytes());
+            }
+        } else {
+            let file_bytes = fs::read(&absolute_path)?;
+            hasher.update(file_bytes.as_slice());
+        }
+
+        let hash = hasher.finalize();
+        Ok(NewMerkleNode {
+            absolute_path,
+            relative_path,
+            children,
+            hash,
+        })
+    }
+
+    pub fn get_name(&self) -> Option<&str> {
+        self.absolute_path.file_name()?.to_str()
+    }
+
+    // pub fn get_hash(&self) -> Result<Hash> {
+    //     let mut hasher = Hasher::new();
+    //     let path_str = self.relative_path.to_str().with_context(|| {
+    //         format!(
+    //             "Could not compute hash for: {}",
+    //             self.relative_path.display()
+    //         )
+    //     })?;
+    //     hasher.update(path_str.as_bytes());
+    //
+    //     if self.absolute_path.is_file() {
+    //         let file_bytes = fs::read(&self.absolute_path)?;
+    //         hasher.update(file_bytes.as_slice());
+    //     } else {
+    //         let child_hashes: Result<Vec<Hash>> =
+    //             self.children.iter().map(|child| child.get_hash()).collect();
+    //         if let Some(children_hash) = find_merkle_hash(&child_hashes?) {
+    //             hasher.update(children_hash.as_bytes());
+    //         }
+    //     }
+    //
+    //     Ok(hasher.finalize())
+    // }
+}
+
+impl PartialOrd<Self> for NewMerkleNode {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.absolute_path.partial_cmp(&other.absolute_path)
+    }
+}
+
+impl Ord for NewMerkleNode {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.absolute_path.cmp(&other.absolute_path)
+    }
 }
