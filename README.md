@@ -15,31 +15,49 @@ merkle_hash = "1"
 ```
 
 
-### Example: Get the hash of a directory using a single function
+### Example: Get the hash of a root directory using a merkle tree
 
-The following code shows the simplest way to get the merkle hash of a directory:
+The following code uses a merkle tree to find the hash of a root directory:
 
 ```rust,no_run
-use merkle_hash::merkle_utils::get_merkle_hash;
+use merkle_hash::merkle_tree::MerkleTree;
 
-let merkle_hash = get_merkle_hash("/root/to/get/paths/from");
+let mut merkle_tree=MerkleTree::new("/root/to/get/paths/from");
+merkle_tree.index().unwrap();
+
+let hash = merkle_tree.get_hash_for_path("").unwrap();
+```
+
+### Example: Get the hash of a subdirectory in a root using a merkle tree
+
+The following code uses a merkle tree to find the hash of a subdirectory:
+
+```rust,no_run
+use merkle_hash::merkle_tree::MerkleTree;
+
+let mut merkle_tree=MerkleTree::new("/root/to/get/paths/from");
+merkle_tree.index().unwrap();
+
+let hash = merkle_tree.get_hash_for_path("some/path/inside/the/root").unwrap();
 ```
 
 ### Example: Get the hash of a directory using a combination of the utility functions
 
-The following code shows the more complicated way to get the merkle hash:
+The following code shows the simplest way to compute a merkle hash without having to instantiate a tree:
 
 ```rust,no_run
-use merkle_hash::{get_paths,get_hashes,find_merkle_hash};
+use merkle_hash::{get_paths,get_hashes_no_paths,find_merkle_hash};
 
-let paths = get_paths("/root/to/get/paths/from");
-let hashes = get_hashes(&paths);
+let paths = get_paths("/root/to/get/paths/from").unwrap();
+let hashes = get_hashes_no_paths(&paths).unwrap();
+
 let merkle_hash = find_merkle_hash(&hashes);
 ```
 
+
 ### Example: Get the hash of a collection of blake3 hashes
 
-The following code demonstrates how to use the merkle hash function to get the single merkle hash from a few blake3 hashes:
+The following code shows how to use the hashing function to get a single hash from a few blake3 hashes:
 
 ```rust,no_run
 use blake3::hash;
@@ -52,17 +70,4 @@ let fourth_hash = hash(b"cow");
 let hashes = vec![first_hash, second_hash, third_hash, fourth_hash];
 
 let merkle_hash = find_merkle_hash(&hashes);
-```
-
-
-### Example: Get the hash of a directory using a merkle item
-
-The following code uses a merkle item to find the merkle hash of a directory,
-you may want to use a merkle item if you want access to more of its functions such as getting all of its direct descendants and more:
-
-```rust,no_run
-use merkle_hash::merkle_item::MerkleItem;
-
-let merkle_item = MerkleItem::new("/root/to/get/paths/from");
-let merkle_hash = merkle_item.get_hash();
 ```

@@ -1,6 +1,6 @@
 [package]
 name = "merkle_hash"
-version = "1.1.1"
+version = "1.2.0"
 edition = "2021"
 authors = ["Hristo_Gochev"]
 description = "Finds the blake3 hash of files or entire directories using a multithreaded merkle tree algorithm."
@@ -15,6 +15,7 @@ categories = ["algorithms", "cryptography"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rayon = "1.5.1"
-blake3 = "1.3.1"
-walkdir = "2.3.2"
+rayon = "1"
+blake3 = "1"
+walkdir = "2"
+anyhow = "1"
