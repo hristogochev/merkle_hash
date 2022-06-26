@@ -1,14 +1,15 @@
+use camino::Utf8PathBuf;
 use std::cmp::Ordering;
-use std::path::PathBuf;
 
-#[derive(Eq, PartialEq, Clone, Debug)]
+/// An utility struct containing an absolute path and a relative path
+#[derive(Eq, PartialEq, Clone, Debug, Hash)]
 pub struct MerklePath {
-    pub relative_path: PathBuf,
-    pub absolute_path: PathBuf,
+    pub relative_path: Utf8PathBuf,
+    pub absolute_path: Utf8PathBuf,
 }
 
 impl MerklePath {
-    pub fn new(relative_path: PathBuf, absolute_path: PathBuf) -> Self {
+    pub fn new(relative_path: Utf8PathBuf, absolute_path: Utf8PathBuf) -> Self {
         Self {
             relative_path,
             absolute_path,

@@ -5,7 +5,7 @@ use rayon::prelude::*;
 ///
 /// - If the provided slice is empty, returns None
 /// - If the provided slice is not empty, recursively finds the single hash
-pub fn find_merkle_hash(hashes: &[Hash]) -> Option<Hash> {
+pub fn compute_merkle_hash(hashes: &[Hash]) -> Option<Hash> {
     let len = hashes.len();
 
     if len < 1 {
@@ -32,5 +32,5 @@ pub fn find_merkle_hash(hashes: &[Hash]) -> Option<Hash> {
         })
         .collect();
 
-    find_merkle_hash(&output)
+    compute_merkle_hash(&output)
 }
