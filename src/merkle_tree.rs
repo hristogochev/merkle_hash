@@ -7,7 +7,7 @@ use std::path::Path;
 
 /// Merkle tree struct that contains a node at its root
 pub struct MerkleTree {
-    main_node: MerkleNode,
+    pub main_node: MerkleNode,
 }
 
 impl MerkleTree {
@@ -17,7 +17,7 @@ impl MerkleTree {
         Ok(Self { main_node })
     }
 
-    /// Traverses the tree, executing an action for each node in it in consequence
+    /// Traverses the tree, executing an action for each node in it
     pub fn traverse<N>(&self, on_node: &N) -> Result<()>
     where
         N: Fn(&MerklePath, &Hash) -> Result<()>,
@@ -26,7 +26,6 @@ impl MerkleTree {
     }
 
     /// Traverses the tree, executing an action for each node in it on multiple threads,
-    /// the execution of the action for each node is not consequential
     pub fn traverse_par<N>(&self, on_node: &N) -> Result<()>
     where
         N: Fn(&MerklePath, &Hash) -> Result<()> + Sync + Send,
@@ -34,16 +33,16 @@ impl MerkleTree {
         self.main_node.traverse_par(on_node)
     }
 
-    /// Collapses the tree's contents into a BTreeSet of collapsed merkle nodes
-    /// Use this if you DO care about the order of nodes based on their paths
+    /// Collapses the tree's contents into a BTreeSet of nodes
+    /// Use this if you DO care about the order of nodes
     pub fn collapse_into_tree_set(self) -> BTreeSet<CollapsedMerkleNode> {
         let mut set = BTreeSet::new();
         self.main_node.collapse_into_tree_set(&mut set);
         set
     }
 
-    /// Collapses the tree's contents into a HashSet of collapsed merkle nodes
-    /// Use this if you DO NOT care about the order of nodes based on their paths
+    /// Collapses the tree's contents into a HashSet of nodes
+    /// Use this if you DO NOT care about the order of nodes
     pub fn collapse_into_hash_set(self) -> HashSet<CollapsedMerkleNode> {
         let mut set = HashSet::new();
         self.main_node.collapse_into_hashset(&mut set);

@@ -1,15 +1,15 @@
 [package]
 name = "merkle_hash"
-version = "2.0.0"
+version = "2.1.0"
 edition = "2021"
-authors = ["Hristo_Gochev"]
-description = "Finds the blake3 hash of files or entire directories using a multithreaded merkle tree algorithm."
+authors = ["hristo-gochev"]
+description = "Finds the hashes of all files and directories in a directory tree."
 license = "MIT"
 documentation = "https://docs.rs/merkle_hash/"
-homepage = "https://github.com/HristoGochevPersonal/merkle_hash"
-repository = "https://github.com/HristoGochevPersonal/merkle_hash"
+homepage = "https://github.com/hristo-gochev/merkle_hash"
+repository = "https://github.com/hristo-gochev/merkle_hash"
 readme = "README.md"
-keywords = ["hash", "directory", "merkle", "blake3", "multithreading"]
+keywords = ["hash", "hashing", "file", "directory", "tree"]
 categories = ["algorithms", "cryptography"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

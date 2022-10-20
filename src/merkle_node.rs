@@ -13,7 +13,7 @@ use walkdir::WalkDir;
 
 /// Merkle node struct that consists of a path, a hash and the children nodes relative to it
 #[derive(Eq, PartialEq, Debug, Clone)]
-pub(crate) struct MerkleNode {
+pub struct MerkleNode {
     pub path: MerklePath,
     pub hash: Hash,
     pub children: BTreeSet<MerkleNode>,
@@ -48,10 +48,10 @@ impl MerkleNode {
         // Indexes the newly created node and returns the result
         Self::get_node(absolute_root, path)
     }
-    /// Indexes a new node, finding its relative path to the root, its hashes based on its contents and name
-    /// and all the same for its descendants
+    /// Indexes a new node, finding its relative path, its hash based on its contents and name
+    /// and all the same for all of its descendants
     fn get_node(root: impl AsRef<Path>, path: MerklePath) -> Result<MerkleNode> {
-        // Creates an owned copy of the root
+        // Creates an owned copy of the root path
         let root = root.as_ref().to_path_buf();
 
         // Indexes its direct descendants for their hashes and paths
@@ -109,7 +109,7 @@ impl MerkleNode {
         Ok(node)
     }
 
-    /// Traverses the node, executing an action for itself and its children in consequence
+    /// Traverses the node, executing an action for itself and its children
     pub fn traverse<N>(&self, on_node: &N) -> Result<()>
     where
         N: Fn(&MerklePath, &Hash) -> Result<()>,
@@ -121,7 +121,6 @@ impl MerkleNode {
     }
 
     /// Traverses the node, executing an action for itself and its children on multiple threads,
-    /// the execution of the action for each node is not consequential
     pub fn traverse_par<N>(&self, on_node: &N) -> Result<()>
     where
         N: Fn(&MerklePath, &Hash) -> Result<()> + Sync + Send,
@@ -132,8 +131,8 @@ impl MerkleNode {
             .try_for_each(|child| child.traverse(on_node))
     }
 
-    /// Collapses the node's contents and its children's contents into a BTreeSet of collapsed merkle nodes
-    /// Use this if you DO care about the order of nodes based on their paths
+    /// Collapses the node its children's contents into a BTreeSet
+    /// Use this if you DO care about the order of nodes
     pub fn collapse_into_tree_set(self, output_set: &mut BTreeSet<CollapsedMerkleNode>) {
         let children_names: BTreeSet<String> = self
             .children
@@ -147,8 +146,8 @@ impl MerkleNode {
             .for_each(|child| child.collapse_into_tree_set(output_set));
     }
 
-    /// Collapses the node's contents and its children's contents into a HashSet of collapsed merkle nodes
-    /// Use this if you DO NOT care about the order of nodes based on their paths
+    /// Collapses the node its children's contents into a HashSet
+    /// Use this if you DO NOT care about the order of nodes
     pub fn collapse_into_hashset(self, output_set: &mut HashSet<CollapsedMerkleNode>) {
         let children_names: BTreeSet<String> = self
             .children
@@ -163,7 +162,7 @@ impl MerkleNode {
     }
 }
 
-/// Represents a merkle node from a merkle tree that has been collapsed into a set
+/// Merkle node from a merkle tree that has been collapsed into a set
 #[derive(Eq, PartialEq, Hash)]
 pub struct CollapsedMerkleNode {
     pub path: MerklePath,
