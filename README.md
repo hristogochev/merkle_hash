@@ -16,7 +16,7 @@ merkle_hash = "2"
 
 ### Examples
 
-#### Get the master hash of a directory tree
+Get the master hash of a directory tree:
 
 ```rust,no_run
 use merkle_hash::merkle_tree::MerkleTree;
@@ -25,7 +25,7 @@ let tree = MerkleTree::new("path/to/tree").unwrap();
 let master_hash = tree.main_node.hash;
 ```
 
-#### Traverse a directory tree, getting the hash of each file and directory
+Traverse a directory tree, getting the hash of each file and directory:
 
 ```rust,no_run
 use merkle_hash::merkle_tree::MerkleTree;
@@ -37,7 +37,7 @@ let traverse_result = tree.traverse(&|path,hash|{
 });
 ```
 
-#### Collapse the tree for linear traversal
+Collapse the tree for linear traversal:
 
 ```rust,no_run
 use merkle_hash::merkle_tree::MerkleTree;
