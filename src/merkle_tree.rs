@@ -25,7 +25,7 @@ impl MerkleTree {
         self.main_node.traverse(on_node)
     }
 
-    /// Traverses the tree, executing an action for each node in it on multiple threads,
+    /// Traverses the tree, executing an action for each node in it on multiple threads
     pub fn traverse_par<N>(&self, on_node: &N) -> Result<()>
     where
         N: Fn(&MerklePath, &Hash) -> Result<()> + Sync + Send,

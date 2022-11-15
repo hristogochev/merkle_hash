@@ -120,7 +120,7 @@ impl MerkleNode {
             .try_for_each(|child| child.traverse(on_node))
     }
 
-    /// Traverses the node, executing an action for itself and its children on multiple threads,
+    /// Traverses the node, executing an action for itself and its children on multiple threads
     pub fn traverse_par<N>(&self, on_node: &N) -> Result<()>
     where
         N: Fn(&MerklePath, &Hash) -> Result<()> + Sync + Send,
@@ -128,7 +128,7 @@ impl MerkleNode {
         on_node(&self.path, &self.hash)?;
         self.children
             .par_iter()
-            .try_for_each(|child| child.traverse(on_node))
+            .try_for_each(|child| child.traverse_par(on_node))
     }
 
     /// Collapses the node its children's contents into a BTreeSet
