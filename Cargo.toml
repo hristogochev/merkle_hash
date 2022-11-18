@@ -1,6 +1,6 @@
 [package]
 name = "merkle_hash"
-version = "2.2.0"
+version = "3.0.0"
 edition = "2021"
 authors = ["hristo-gochev"]
 description = "Finds the hashes of all files and directories in a directory tree."
@@ -17,6 +17,6 @@ categories = ["algorithms", "cryptography"]
 [dependencies]
 rayon = "1"
 blake3 = "1"
-walkdir = "2"
 anyhow = "1"
 camino = "1"
+

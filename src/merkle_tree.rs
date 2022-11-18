@@ -1,51 +1,45 @@
-use crate::merkle_node::{CollapsedMerkleNode, MerkleNode};
-use crate::merkle_path::MerklePath;
+use crate::merkle_item::MerkleItem;
+use crate::merkle_node::MerkleNode;
+use crate::merkle_node_into_iter::MerkleNodeIntoIter;
+use crate::merkle_node_iter::MerkleNodeIter;
 use anyhow::Result;
-use blake3::Hash;
-use std::collections::{BTreeSet, HashSet};
 use std::path::Path;
 
-/// Merkle tree struct that contains a node at its root
+/// Represents an indexed directory tree
 pub struct MerkleTree {
     pub main_node: MerkleNode,
 }
 
 impl MerkleTree {
     /// Creates a new tree indexing its descendants upon creation
-    pub fn new(absolute_path: impl AsRef<Path>) -> Result<Self> {
-        let main_node = MerkleNode::new(absolute_path)?;
+    /// - If hash_names is true, includes the names of the files and directories in their hashes.
+    pub fn new(root_absolute_path: impl AsRef<Path>, hash_names: bool) -> Result<Self> {
+        let main_node = MerkleNode::new(root_absolute_path, hash_names)?;
         Ok(Self { main_node })
     }
 
-    /// Traverses the tree, executing an action for each node in it
-    pub fn traverse<N>(&self, on_node: &N) -> Result<()>
-    where
-        N: Fn(&MerklePath, &Hash) -> Result<()>,
-    {
-        self.main_node.traverse(on_node)
+    /// Returns an iterator over each file and directory in the tree
+    pub fn iter(&self) -> MerkleNodeIter {
+        self.main_node.iter()
     }
+}
 
-    /// Traverses the tree, executing an action for each node in it on multiple threads
-    pub fn traverse_par<N>(&self, on_node: &N) -> Result<()>
-    where
-        N: Fn(&MerklePath, &Hash) -> Result<()> + Sync + Send,
-    {
-        self.main_node.traverse_par(on_node)
+impl<'a> IntoIterator for &'a MerkleTree {
+    type Item = &'a MerkleItem;
+
+    type IntoIter = MerkleNodeIter<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
     }
+}
 
-    /// Collapses the tree's contents into a BTreeSet of nodes
-    /// Use this if you DO care about the order of nodes
-    pub fn collapse_into_tree_set(self) -> BTreeSet<CollapsedMerkleNode> {
-        let mut set = BTreeSet::new();
-        self.main_node.collapse_into_tree_set(&mut set);
-        set
-    }
+impl IntoIterator for MerkleTree {
+    type Item = MerkleItem;
 
-    /// Collapses the tree's contents into a HashSet of nodes
-    /// Use this if you DO NOT care about the order of nodes
-    pub fn collapse_into_hash_set(self) -> HashSet<CollapsedMerkleNode> {
-        let mut set = HashSet::new();
-        self.main_node.collapse_into_hashset(&mut set);
-        set
+    type IntoIter = MerkleNodeIntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.main_node.into_iter()
     }
 }
