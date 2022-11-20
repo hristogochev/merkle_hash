@@ -59,8 +59,9 @@ impl MerkleNode {
             let children: Result<BTreeSet<MerkleNode>> = fs::read_dir(&path.absolute)?
                 .par_bridge()
                 .map(|entry| {
-                    let Ok(absolute_path) = Utf8PathBuf::from_path_buf(entry?.path())else{
-                        bail!("Path is not valid UTF8 path")
+                    let absolute_path = match Utf8PathBuf::from_path_buf(entry?.path()) {
+                        Ok(absolute_path) => absolute_path,
+                        Err(_) => bail!("Path is not valid UTF8 path"),
                     };
                     let relative_path = absolute_path.strip_prefix(&root)?.to_path_buf();
                     let merkle_path = MerklePath::new(relative_path, absolute_path);
