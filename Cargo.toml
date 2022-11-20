@@ -1,6 +1,6 @@
 [package]
 name = "merkle_hash"
-version = "3.0.0"
+version = "3.0.1"
 edition = "2021"
 authors = ["hristo-gochev"]
 description = "Finds the hashes of all files and directories in a directory tree."
