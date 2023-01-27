@@ -60,4 +60,4 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 
 ### License
 
-Licensed under [MIT license](https://github.com/hristo-gochev/merkle_hash/blob/main/LICENSE).
+Licensed under [MIT license](https://github.com/hristogochev/merkle_hash/blob/main/LICENSE).
