@@ -16,7 +16,7 @@ merkle_hash = "3.1"
 * Offers [Blake3](https://crates.io/crates/blake3) and [SHA-256](https://crates.io/crates/sha2) as hashing algorithms.
 * Offers ability to include names in the hashing process.
 * Uses a merkle tree algorithm to compute the hashes of directories.
-* Allows for external iteration over the paths and hashes of files and directories.
+* External iteration over the paths and hashes of files and directories.
 
 
 ### Examples
