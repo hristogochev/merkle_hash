@@ -1,8 +1,10 @@
-use crate::merkle_item::MerkleItem;
-use crate::merkle_node::MerkleNode;
 use std::collections::btree_set::Iter;
 use std::iter::FusedIterator;
 
+use crate::components::merkle_item::MerkleItem;
+use crate::tree::merkle_node::MerkleNode;
+
+/// Node iterator
 #[derive(Default)]
 pub struct MerkleNodeIter<'a> {
     value: Option<&'a MerkleItem>,

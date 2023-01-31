@@ -1,7 +1,9 @@
-use crate::merkle_item::MerkleItem;
-use crate::merkle_node::MerkleNode;
 use std::collections::btree_set::IntoIter;
 
+use crate::components::merkle_item::MerkleItem;
+use crate::tree::merkle_node::MerkleNode;
+
+/// Owned node iterator
 #[derive(Default)]
 pub struct MerkleNodeIntoIter {
     value: Option<MerkleItem>,

@@ -1,17 +1,16 @@
-use crate::merkle_path::MerklePath;
-use crate::merkle_utils::compute_merkle_hash;
-use anyhow::{bail, Context, Result};
-use blake3::{hash, Hash, Hasher};
-use rayon::prelude::*;
 use std::cmp::Ordering;
 use std::collections::BTreeSet;
-
-use crate::merkle_item::MerkleItem;
-use camino::{Utf8Path, Utf8PathBuf};
 use std::fs;
-use std::path::Path;
 
-/// Merkle node struct that consists of the children nodes relative to it and an item with contents.
+use anyhow::{bail, Context, Result};
+use camino::Utf8PathBuf;
+use rayon::prelude::*;
+
+use crate::components::merkle_item::MerkleItem;
+use crate::components::merkle_path::MerklePath;
+use crate::utils::algorithm::Algorithm;
+
+/// Represents a single node on the merkle tree
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct MerkleNode {
     pub item: MerkleItem,
@@ -31,64 +30,62 @@ impl Ord for MerkleNode {
 }
 
 impl MerkleNode {
-    /// Creates a new merkle node
-    pub fn new(absolute_root: impl AsRef<Path>, hash_names: bool) -> Result<Self> {
+    /// Creates a new root node
+    pub fn root(root: &str, hash_names: bool, algorithm: Algorithm) -> Result<Self> {
         // Creates a new empty relative path, as this is the root
         let relative_path = Utf8PathBuf::from("");
 
         // Gets an owned copy of the absolute path
-        let absolute_path = Utf8Path::from_path(absolute_root.as_ref())
-            .with_context(|| "Path is not valid UTF8 path")?
-            .to_path_buf();
+        let absolute_path = Utf8PathBuf::from(root);
 
         // Creates a new merkle path based on them both
         let path = MerklePath::new(relative_path, absolute_path);
 
         // Indexes the newly created node and returns the result
-        Self::get_node(absolute_root, path, hash_names)
+        Self::index(root, path, hash_names, &algorithm)
     }
 
     /// Indexes a new node, finding its relative and absolute paths, its file/directory hash
     /// and the same for all of its descendants
-    fn get_node(root: impl AsRef<Path>, path: MerklePath, hash_names: bool) -> Result<MerkleNode> {
-        // Creates an owned copy of the root path
-        let root = root.as_ref().to_path_buf();
-
+    fn index(
+        root: &str,
+        path: MerklePath,
+        hash_names: bool,
+        algorithm: &Algorithm,
+    ) -> Result<MerkleNode> {
         // Indexes its direct descendants for their hashes and paths
-        let children: BTreeSet<MerkleNode> = if path.absolute.is_dir() {
-            let children: Result<BTreeSet<MerkleNode>> = fs::read_dir(&path.absolute)?
+        let children = if path.absolute.is_dir() {
+            fs::read_dir(&path.absolute)?
                 .par_bridge()
                 .map(|entry| {
                     let absolute_path = match Utf8PathBuf::from_path_buf(entry?.path()) {
                         Ok(absolute_path) => absolute_path,
-                        Err(_) => bail!("Path is not valid UTF8 path"),
+                        Err(path) => bail!("Path is not valid UTF8 path: {}", path.display()),
                     };
-                    let relative_path = absolute_path.strip_prefix(&root)?.to_path_buf();
-                    let merkle_path = MerklePath::new(relative_path, absolute_path);
-                    let merkle_node = Self::get_node(&root, merkle_path, hash_names)?;
-                    Ok(merkle_node)
+                    let relative_path = absolute_path.strip_prefix(root)?.to_path_buf();
+                    let path = MerklePath::new(relative_path, absolute_path);
+                    let node = Self::index(root, path, hash_names, algorithm)?;
+                    Ok(node)
                 })
-                .collect();
-
-            children?
+                .collect::<Result<BTreeSet<MerkleNode>>>()?
         } else {
             BTreeSet::new()
         };
 
         // Finds the node's contents hash
-        let contents_hash: Hash = if path.absolute.is_dir() {
-            let hashes: Vec<Hash> = children.iter().map(|child| child.item.hash).collect();
-            match compute_merkle_hash(&hashes) {
+        let contents_hash: [u8; 32] = if path.absolute.is_dir() {
+            let hashes: Vec<[u8; 32]> = children.iter().map(|child| child.item.hash).collect();
+            match algorithm.compute_merkle_hash(&hashes) {
                 Some(hash) => hash,
-                None => hash(b""),
+                None => algorithm.compute_hash(b""),
             }
         } else {
             let file_bytes = fs::read(&path.absolute)?;
-            hash(&file_bytes)
+            algorithm.compute_hash(&file_bytes)
         };
 
         // Check if names should be included in the hashing results and get the output hash
-        let hash: Hash = if hash_names {
+        let hash: [u8; 32] = if hash_names {
             // Gets the node path's name
             let name = path
                 .absolute
@@ -96,12 +93,7 @@ impl MerkleNode {
                 .with_context(|| format!("File name missing for: {}", path.absolute))?;
 
             // Create a hashing stack
-            let mut hasher = Hasher::new();
-
-            hasher.update(name.as_bytes());
-            hasher.update(contents_hash.as_bytes());
-
-            hasher.finalize()
+            algorithm.compute_hash_from_slices(name.as_bytes(), &contents_hash)
         } else {
             contents_hash
         };

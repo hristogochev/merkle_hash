@@ -1,69 +1,67 @@
 /*!
 Crate `merkle_hash` makes it easy to find the hashes of all files and directories in a directory tree.
 
-# Features
-
-* Finds the master hash of a directory tree with ease.
-* External iteration over the paths and hashes of each file and directory.
-* Ability to specify whether names should be included in the hashes of files and directories.
-
 # Usage
 
 To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-merkle_hash = "3"
+merkle_hash = "3.1"
 ```
+
+# Features
+
+* Finds the master hash of a directory tree with ease.
+* Offers Blake3 and Sha256 as hashing algorithms.
+* External iteration over the paths and hashes of each file and directory.
+* Ability to specify whether names should be included in the hashes of files and directories.
 
 # Example: Get the master hash of a directory tree:
 ```
-use merkle_hash::MerkleTree;
+use merkle_hash::{MerkleTree,Algorithm};
 
-let tree = MerkleTree::new("/path/to/directory", true).unwrap();
+let tree = MerkleTree::builder("/path/to/directory")
+    .algorithm(Algorithm::Blake3)
+    .hash_names(false)
+    .build()?;
 let master_hash = tree.main_node.item.hash;
 ```
 
 # Example: Iterate over a directory tree, getting the hash of each file and directory:
 ```
-use merkle_hash::MerkleTree;
+use merkle_hash::{MerkleTree,bytes_to_hex};
 
-let tree = MerkleTree::new("/path/to/directory", true).unwrap();
+let tree = MerkleTree::builder("/path/to/directory").build()?;
 for item in tree {
-    println!("{}: {}", item.path.relative, item.hash);
+    println!("{}: {}", item.path.relative, bytes_to_hex(&item.hash));
 }
 ```
 
 # Example: Collapse the tree into any linear collection:
 ```
 use std::collections::BTreeSet;
-use merkle_hash::MerkleTree;
-use merkle_hash::MerkleItem;
+use merkle_hash::{MerkleTree,MerkleItem};
 
-let tree = MerkleTree::new("/path/to/directory", true).unwrap();
+let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
  */
 
-/// Holds the path, hash and children paths of a file or directory
-pub mod merkle_item;
-/// Represents a single node on the merkle tree
-pub mod merkle_node;
-/// Owned node iterator
-pub mod merkle_node_into_iter;
-/// Node iterator
-pub mod merkle_node_iter;
-/// Utility that represents relative and absolute paths
-pub mod merkle_path;
-/// The main tree with merkle hashes
-pub mod merkle_tree;
-/// Merkle hashing utility functions
-pub mod merkle_utils;
+mod components;
+mod iters;
+mod tree;
+mod utils;
 
-/// Merkle item reexport
-pub use merkle_item::MerkleItem;
-/// Merkle tree reexport
-pub use merkle_tree::MerkleTree;
+pub use components::merkle_item::MerkleItem;
+pub use components::merkle_path::MerklePath;
+pub use iters::merkle_node_into_iter::MerkleNodeIntoIter;
+pub use iters::merkle_node_iter::MerkleNodeIter;
+pub use tree::merkle_node::MerkleNode;
+pub use tree::merkle_tree::MerkleTree;
+pub use tree::merkle_tree_builder::MerkleTreeBuilder;
+pub use utils::algorithm::Algorithm;
+pub use utils::hex_encoding::bytes_to_hex;
 
 /// Used dependencies reexport
 pub use anyhow;
