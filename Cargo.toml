@@ -9,7 +9,7 @@ documentation = "https://docs.rs/merkle_hash/"
 homepage = "https://github.com/hristogochev/merkle_hash"
 repository = "https://github.com/hristogochev/merkle_hash"
 readme = "README.md"
-keywords = ["hash", "hashing", "file", "directory", "tree"]
+keywords = ["hash", "checksum", "file", "directory", "tree"]
 categories = ["algorithms", "cryptography"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
