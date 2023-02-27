@@ -73,8 +73,12 @@ impl MerkleNode {
         };
 
         // Finds the node's contents hash
-        let contents_hash: [u8; 32] = if path.absolute.is_dir() {
-            let hashes: Vec<[u8; 32]> = children.iter().map(|child| child.item.hash).collect();
+        let contents_hash: Vec<u8> = if path.absolute.is_dir() {
+            let hashes: Vec<_> = children
+                .iter()
+                .map(|child| child.item.hash.as_slice())
+                .collect();
+
             match algorithm.compute_merkle_hash(&hashes) {
                 Some(hash) => hash,
                 None => algorithm.compute_hash(b""),
@@ -85,7 +89,7 @@ impl MerkleNode {
         };
 
         // Check if names should be included in the hashing results and get the output hash
-        let hash: [u8; 32] = if hash_names {
+        let hash: Vec<u8> = if hash_names {
             // Gets the node path's name
             let name = path
                 .absolute

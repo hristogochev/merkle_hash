@@ -7,14 +7,14 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.1"
+merkle_hash = "3.2"
 ```
 
 ### Features
 
 * Finds the master hash of a directory tree with ease.
-* Offers [Blake3](https://crates.io/crates/blake3) and [SHA-256](https://crates.io/crates/sha2) as hashing algorithms.
-* Offers ability to include names in the hashing process.
+* Offers [Blake3](https://crates.io/crates/blake3), [SHA-256](https://crates.io/crates/sha2) and [SHA-512](https://crates.io/crates/sha2) as hashing algorithms.
+* Allows including names in the hashing process.
 * Uses a merkle tree algorithm to compute the hashes of directories.
 * External iteration over the paths and hashes of files and directories.
 
@@ -61,7 +61,7 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 * [camino](https://crates.io/crates/camino) to ensure that paths are always utf-8.
 * [anyhow](https://crates.io/crates/anyhow) to ease-out the handling of errors.
 * [blake3](https://crates.io/crates/blake3) for the blake3 hashing of file contents.
-* [sha2](https://crates.io/crates/sha2) for the sha256 hashing of file contents.
+* [sha2](https://crates.io/crates/sha2) for the sha256 and sha512 hashing of file contents.
 
 ### License
 
