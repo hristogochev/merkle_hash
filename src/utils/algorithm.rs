@@ -1,6 +1,6 @@
 use blake3::Hasher;
 use rayon::prelude::*;
-use sha2::{Digest, Sha256};
+use sha2::{Digest, Sha256, Sha512};
 
 /// Hashing algorithms to choose from
 #[derive(Default)]
@@ -8,11 +8,12 @@ pub enum Algorithm {
     #[default]
     Blake3,
     Sha256,
+    Sha512,
 }
 
 impl Algorithm {
     /// Computes a merkle hash from a slice of bytes
-    pub fn compute_merkle_hash(&self, hashes: &[[u8; 32]]) -> Option<[u8; 32]> {
+    pub fn compute_merkle_hash(&self, hashes: &[&[u8]]) -> Option<Vec<u8>> {
         let len = hashes.len();
 
         if len < 1 {
@@ -20,10 +21,10 @@ impl Algorithm {
         }
 
         if len == 1 {
-            return hashes.first().cloned();
+            return hashes.first().copied().map(|first| first.to_vec());
         }
 
-        let output: Vec<[u8; 32]> = hashes
+        let output: Vec<_> = hashes
             .par_chunks(2)
             .flat_map(|hash_chunks| {
                 let first = hash_chunks.first()?;
@@ -36,41 +37,55 @@ impl Algorithm {
             })
             .collect();
 
+        let output: Vec<_> = output
+            .iter()
+            .map(|reference| reference.as_slice())
+            .collect();
+
         self.compute_merkle_hash(&output)
     }
 
     /// Computes a single hash from 2 slices of bytes
-    pub fn compute_hash_from_slices(&self, first_slice: &[u8], second_slice: &[u8]) -> [u8; 32] {
+    pub fn compute_hash_from_slices(&self, first_slice: &[u8], second_slice: &[u8]) -> Vec<u8> {
         match self {
             Algorithm::Blake3 => {
                 let mut hasher = Hasher::new();
                 hasher.update(first_slice);
                 hasher.update(second_slice);
-                hasher.finalize().into()
+                hasher.finalize().as_bytes().to_vec()
             }
             Algorithm::Sha256 => {
                 let mut hasher = Sha256::new();
                 hasher.update(first_slice);
                 hasher.update(second_slice);
-                let hash_array = hasher.finalize();
-                let res: &[u8; 32] = hash_array.as_ref();
-                res.to_owned()
+                hasher.finalize().to_vec()
+            }
+            Algorithm::Sha512 => {
+                let mut hasher = Sha512::new();
+                hasher.update(first_slice);
+                hasher.update(second_slice);
+                hasher.finalize().to_vec()
             }
         }
     }
 
     /// Computes a hash from a slice of bytes
-    pub fn compute_hash(&self, bytes: &[u8]) -> [u8; 32] {
+    pub fn compute_hash(&self, bytes: &[u8]) -> Vec<u8> {
         match self {
-            Algorithm::Blake3 => blake3::hash(bytes).into(),
+            Algorithm::Blake3 => blake3::hash(bytes).as_bytes().to_vec(),
             Algorithm::Sha256 => {
                 let mut hasher = Sha256::new();
 
                 hasher.update(bytes);
 
-                let hash_array = hasher.finalize();
-                let res: &[u8; 32] = hash_array.as_ref();
-                res.to_owned()
+                hasher.finalize().to_vec()
+            }
+            Algorithm::Sha512 => {
+                let mut hasher = Sha512::new();
+
+                hasher.update(bytes);
+
+                hasher.finalize().to_vec()
             }
         }
     }

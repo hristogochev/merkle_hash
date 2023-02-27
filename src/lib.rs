@@ -7,7 +7,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.1"
+merkle_hash = "3.2"
 ```
 
 # Features
