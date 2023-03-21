@@ -7,15 +7,19 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.2"
+merkle_hash = "3.3"
 ```
 
 # Features
 
 * Finds the master hash of a directory tree with ease.
-* Offers Blake3, Sha256 and Sha512 as hashing algorithms.
+* Offers multiple hashing algorithms.
 * External iteration over the paths and hashes of each file and directory.
 * Ability to specify whether names should be included in the hashes of files and directories.
+
+# Cargo features
+
+* ["sha2-hashes"] - Adds `SHA-256` and `SHA-512` as hashing algorithms.
 
 # Example: Get the master hash of a directory tree:
 ```
