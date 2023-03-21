@@ -19,7 +19,7 @@ merkle_hash = "3.3"
 
 # Cargo features
 
-* ["sha"] - Adds `SHA-256` and `SHA-512` as hashing algorithms.
+* `sha` - Adds `SHA-256` and `SHA-512` as hashing algorithms.
 
 # Example: Get the master hash of a directory tree:
 ```

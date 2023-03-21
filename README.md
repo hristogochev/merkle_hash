@@ -56,7 +56,7 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 
 ### Cargo features
 
-* ["sha"] - Adds `SHA-256` and `SHA-512` as hashing algorithms.
+* `sha` - Adds `SHA-256` and `SHA-512` as hashing algorithms.
 
 ### Versioning
 
