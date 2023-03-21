@@ -21,7 +21,7 @@ merkle_hash = "3.4"
 
 ### Optional
 
-* `sha` - Add this feature to include `SHA-256` and `SHA-512` as hashing algorithms.
+* `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 
 ### Examples
 
@@ -58,12 +58,6 @@ let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
 
-### Versioning
-
-* Any major version of this crate, e.g. 2.0.0 to 3.0.0, may contain changes to the hashing algorithm.
-* Any minor version of this crate, e.g. 3.2.0 to 3.3.0, may contain breaking changes to the API.
-* Any patch version of this crate, e.g. 3.1.0 to 3.1.1, will only contain bug fixes and no breaking changes.
-
 ### Used technologies
 
 * [rayon](https://crates.io/crates/rayon) for multithreaded directory reading and hashing.
@@ -71,6 +65,12 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 * [anyhow](https://crates.io/crates/anyhow) to ease-out the handling of errors.
 * [blake3](https://crates.io/crates/blake3) for the blake3 hashing of file contents.
 * [sha2](https://crates.io/crates/sha2) for the sha256 and sha512 hashing of file contents.
+
+### Versioning
+
+* Any major version of this crate may contain changes to the hashing algorithm.
+* Any minor version of this crate may contain breaking changes to the API.
+* Any patch version of this crate will only contain bug fixes and no breaking changes.
 
 ### License
 

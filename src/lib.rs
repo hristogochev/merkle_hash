@@ -14,12 +14,13 @@ merkle_hash = "3.4"
 
 * Finds the master hash of a directory tree with ease.
 * Offers multiple hashing algorithms.
-* External iteration over the paths and hashes of each file and directory.
-* Ability to specify whether names should be included in the hashes of files and directories.
+* Allows including names in the hashing process.
+* Uses a merkle tree algorithm to compute the hashes of directories.
+* External iteration over the paths and hashes of files and directories.
 
 # Optional
 
-* `sha` - Add this feature to include `SHA-256` and `SHA-512` as hashing algorithms.
+* `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 
 # Example: Get the master hash of a directory tree:
 ```
