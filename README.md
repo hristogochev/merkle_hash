@@ -1,4 +1,5 @@
 # merkle_hash
+
 Finds the hashes of all files and directories in a directory tree.
 
 ### Usage
@@ -7,7 +8,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.3"
+merkle_hash = "3.4"
 ```
 
 ### Features
@@ -18,6 +19,9 @@ merkle_hash = "3.3"
 * Uses a merkle tree algorithm to compute the hashes of directories.
 * External iteration over the paths and hashes of files and directories.
 
+### Optional
+
+* `sha` - Add this feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 
 ### Examples
 
@@ -53,10 +57,6 @@ use merkle_hash::{MerkleTree,MerkleItem};
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
-
-### Cargo features
-
-* `sha` - Adds `SHA-256` and `SHA-512` as hashing algorithms.
 
 ### Versioning
 

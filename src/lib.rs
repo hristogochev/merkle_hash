@@ -7,7 +7,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.3"
+merkle_hash = "3.4"
 ```
 
 # Features
@@ -17,9 +17,9 @@ merkle_hash = "3.3"
 * External iteration over the paths and hashes of each file and directory.
 * Ability to specify whether names should be included in the hashes of files and directories.
 
-# Cargo features
+# Optional
 
-* `sha` - Adds `SHA-256` and `SHA-512` as hashing algorithms.
+* `sha` - Add this feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 
 # Example: Get the master hash of a directory tree:
 ```
