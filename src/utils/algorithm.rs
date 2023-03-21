@@ -1,6 +1,6 @@
 use blake3::Hasher;
 use rayon::prelude::*;
-#[cfg(feature = "expand")]
+#[cfg(feature = "sha2-hash")]
 use sha2::{Digest, Sha256, Sha512};
 
 /// Hashing algorithms to choose from
@@ -8,9 +8,9 @@ use sha2::{Digest, Sha256, Sha512};
 pub enum Algorithm {
     #[default]
     Blake3,
-    #[cfg(feature = "expand")]
+    #[cfg(feature = "sha2-hash")]
     Sha256,
-    #[cfg(feature = "expand")]
+    #[cfg(feature = "sha2-hash")]
     Sha512,
 }
 
@@ -57,14 +57,14 @@ impl Algorithm {
                 hasher.update(second_slice);
                 hasher.finalize().as_bytes().to_vec()
             }
-            #[cfg(feature = "expand")]
+            #[cfg(feature = "sha2-hash")]
             Algorithm::Sha256 => {
                 let mut hasher = Sha256::new();
                 hasher.update(first_slice);
                 hasher.update(second_slice);
                 hasher.finalize().to_vec()
             }
-            #[cfg(feature = "expand")]
+            #[cfg(feature = "sha2-hash")]
             Algorithm::Sha512 => {
                 let mut hasher = Sha512::new();
                 hasher.update(first_slice);
@@ -78,7 +78,7 @@ impl Algorithm {
     pub fn compute_hash(&self, bytes: &[u8]) -> Vec<u8> {
         match self {
             Algorithm::Blake3 => blake3::hash(bytes).as_bytes().to_vec(),
-            #[cfg(feature = "expand")]
+            #[cfg(feature = "sha2-hash")]
             Algorithm::Sha256 => {
                 let mut hasher = Sha256::new();
 
@@ -86,7 +86,7 @@ impl Algorithm {
 
                 hasher.finalize().to_vec()
             }
-            #[cfg(feature = "expand")]
+            #[cfg(feature = "sha2-hash")]
             Algorithm::Sha512 => {
                 let mut hasher = Sha512::new();
 
