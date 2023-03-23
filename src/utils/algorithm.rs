@@ -1,4 +1,5 @@
 use blake3::Hasher;
+#[cfg(feature = "parallel")]
 use rayon::prelude::*;
 #[cfg(feature = "sha")]
 use sha2::{Digest, Sha256, Sha512};
@@ -27,8 +28,13 @@ impl Algorithm {
             return hashes.first().copied().map(|first| first.to_vec());
         }
 
-        let output: Vec<_> = hashes
-            .par_chunks(2)
+        #[cfg(feature = "parallel")]
+        let chunks = hashes.par_chunks(2);
+
+        #[cfg(not(feature = "parallel"))]
+        let chunks = hashes.chunks(2);
+
+        let output: Vec<_> = chunks
             .flat_map(|hash_chunks| {
                 let first = hash_chunks.first()?;
                 let second = match hash_chunks.get(1) {

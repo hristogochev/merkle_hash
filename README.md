@@ -22,6 +22,7 @@ merkle_hash = "3.4"
 ### Optional
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
+* `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
 
 ### Examples
 

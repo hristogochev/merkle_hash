@@ -4,6 +4,7 @@ use std::fs;
 
 use anyhow::{bail, Context, Result};
 use camino::Utf8PathBuf;
+#[cfg(feature = "parallel")]
 use rayon::prelude::*;
 
 use crate::components::merkle_item::MerkleItem;
@@ -55,8 +56,12 @@ impl MerkleNode {
     ) -> Result<MerkleNode> {
         // Indexes its direct descendants for their hashes and paths
         let children = if path.absolute.is_dir() {
-            fs::read_dir(&path.absolute)?
-                .par_bridge()
+            let read_dir = fs::read_dir(&path.absolute)?;
+
+            #[cfg(feature = "parallel")]
+            let read_dir = read_dir.par_bridge();
+
+            read_dir
                 .map(|entry| {
                     let absolute_path = match Utf8PathBuf::from_path_buf(entry?.path()) {
                         Ok(absolute_path) => absolute_path,
@@ -84,7 +89,9 @@ impl MerkleNode {
                 None => algorithm.compute_hash(b""),
             }
         } else {
-            let file_bytes = fs::read(&path.absolute)?;
+            let file_bytes = fs::read(&path.absolute)
+                .with_context(|| format!("Unable to read file: {}", path.absolute))?;
+
             algorithm.compute_hash(&file_bytes)
         };
 
@@ -94,7 +101,7 @@ impl MerkleNode {
             let name = path
                 .absolute
                 .file_name()
-                .with_context(|| format!("File name missing for: {}", path.absolute))?;
+                .with_context(|| format!("Unable to read file: {}", path.absolute))?;
 
             // Create a hashing stack
             algorithm.compute_hash_from_slices(name.as_bytes(), &contents_hash)
@@ -103,10 +110,13 @@ impl MerkleNode {
         };
 
         // Get the direct descendant paths
-        let children_paths = children
-            .par_iter()
-            .map(|child| child.item.path.clone())
-            .collect();
+        #[cfg(feature = "parallel")]
+        let children_iter = children.par_iter();
+
+        #[cfg(not(feature = "parallel"))]
+        let children_iter = children.iter();
+
+        let children_paths = children_iter.map(|child| child.item.path.clone()).collect();
 
         // Returns the newly created node with its data
         let item = MerkleItem::new(path, hash, children_paths);

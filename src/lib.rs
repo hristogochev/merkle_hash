@@ -21,6 +21,8 @@ merkle_hash = "3.4"
 # Optional
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
+* `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
+
 
 # Example: Get the master hash of a directory tree:
 ```
@@ -72,4 +74,5 @@ pub use utils::hex_encoding::bytes_to_hex;
 pub use anyhow;
 pub use blake3;
 pub use camino;
+#[cfg(feature = "parallel")]
 pub use rayon;
