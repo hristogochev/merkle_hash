@@ -24,6 +24,10 @@ merkle_hash = "3.4"
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
 
+### Limitations
+
+* Currently only supports UTF-8 paths and will fail if a path is not UTF-8 encoded.
+
 ### Examples
 
 Get the master hash of a directory tree:
