@@ -32,7 +32,7 @@ let tree = MerkleTree::builder("/path/to/directory")
     .algorithm(Algorithm::Blake3)
     .hash_names(false)
     .build()?;
-let master_hash = tree.main_node.item.hash;
+let master_hash = tree.root.item.hash;
 ```
 
 # Example: Iterate over a directory tree, getting the hash of each file and directory:

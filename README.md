@@ -35,7 +35,7 @@ let tree = MerkleTree::builder("/path/to/directory")
     .algorithm(Algorithm::Blake3)
     .hash_names(false)
     .build()?;
-let master_hash = tree.main_node.item.hash;
+let master_hash = tree.root.item.hash;
 ```
 
 Iterate over a directory tree, getting the hash of each file and directory:
@@ -59,6 +59,12 @@ let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
 
+### Versioning
+
+* Any major version of this crate may contain changes to the hashing algorithm.
+* Any minor version of this crate may contain breaking changes to the API.
+* Any patch version of this crate will only contain bug fixes and no breaking changes.
+
 ### Used technologies
 
 * [rayon](https://crates.io/crates/rayon) for multithreaded directory reading and hashing.
@@ -66,12 +72,6 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 * [anyhow](https://crates.io/crates/anyhow) to ease-out the handling of errors.
 * [blake3](https://crates.io/crates/blake3) for the blake3 hashing of file contents.
 * [sha2](https://crates.io/crates/sha2) for the sha256 and sha512 hashing of file contents.
-
-### Versioning
-
-* Any major version of this crate may contain changes to the hashing algorithm.
-* Any minor version of this crate may contain breaking changes to the API.
-* Any patch version of this crate will only contain bug fixes and no breaking changes.
 
 ### License
 

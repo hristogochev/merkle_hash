@@ -7,7 +7,7 @@ use crate::utils::algorithm::Algorithm;
 
 /// Represents an indexed directory tree
 pub struct MerkleTree {
-    pub main_node: MerkleNode,
+    pub root: MerkleNode,
 }
 
 impl MerkleTree {
@@ -25,7 +25,7 @@ impl MerkleTree {
     }
     /// Returns an iterator over each file and directory in the tree
     pub fn iter(&self) -> MerkleNodeIter {
-        self.main_node.iter()
+        self.root.iter()
     }
 }
 
@@ -45,6 +45,6 @@ impl IntoIterator for MerkleTree {
     type IntoIter = MerkleNodeIntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.main_node.into_iter()
+        self.root.into_iter()
     }
 }

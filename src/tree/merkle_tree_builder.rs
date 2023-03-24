@@ -28,8 +28,7 @@ impl MerkleTreeBuilder {
 
     /// Builds the hash tree by indexing all of its descendants
     pub fn build(self) -> Result<MerkleTree> {
-        let main_node =
-            MerkleNode::root(&self.absolute_root_path, self.hash_names, self.algorithm)?;
-        Ok(MerkleTree { main_node })
+        let root = MerkleNode::root(&self.absolute_root_path, self.hash_names, self.algorithm)?;
+        Ok(MerkleTree { root })
     }
 }
