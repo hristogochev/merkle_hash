@@ -26,7 +26,7 @@ merkle_hash = "3.4"
 
 # Example: Get the master hash of a directory tree:
 ```
-use merkle_hash::{MerkleTree,Algorithm};
+use merkle_hash::{Algorithm, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory")
     .algorithm(Algorithm::Blake3)
@@ -37,18 +37,18 @@ let master_hash = tree.root.item.hash;
 
 # Example: Iterate over a directory tree, getting the hash of each file and directory:
 ```
-use merkle_hash::{MerkleTree,bytes_to_hex};
+use merkle_hash::{bytes_to_hex, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 for item in tree {
-    println!("{}: {}", item.path.relative, bytes_to_hex(&item.hash));
+    println!("{}: {}", item.path.relative, bytes_to_hex(item.hash));
 }
 ```
 
 # Example: Collapse the tree into any linear collection:
 ```
 use std::collections::BTreeSet;
-use merkle_hash::{MerkleTree,MerkleItem};
+use merkle_hash::{MerkleItem, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
