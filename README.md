@@ -8,7 +8,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.4"
+merkle_hash = "3.5"
 ```
 
 ### Features
@@ -19,14 +19,14 @@ merkle_hash = "3.4"
 * Uses a merkle tree algorithm to compute the hashes of directories.
 * External iteration over the paths and hashes of files and directories.
 
+### Limitations
+
+* Currently only supports UTF-8 paths and will fail if a path is not UTF-8 encoded.
+
 ### Optional
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
-
-### Limitations
-
-* Currently only supports UTF-8 paths and will fail if a path is not UTF-8 encoded.
 
 ### Examples
 
