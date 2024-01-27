@@ -7,7 +7,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.5"
+merkle_hash = "3.6"
 ```
 
 # Features
@@ -26,6 +26,8 @@ merkle_hash = "3.5"
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
+* `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
+* `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 
 # Example: Get the master hash of a directory tree:
 ```
@@ -40,11 +42,11 @@ let master_hash = tree.root.item.hash;
 
 # Example: Iterate over a directory tree, getting the hash of each file and directory:
 ```
-use merkle_hash::{bytes_to_hex, MerkleTree};
+use merkle_hash::{Encodable, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 for item in tree {
-    println!("{}: {}", item.path.relative, bytes_to_hex(item.hash));
+    println!("{}: {}", item.path.relative, item.hash.to_hex_string());
 }
 ```
 
@@ -71,7 +73,10 @@ pub use tree::merkle_node::MerkleNode;
 pub use tree::merkle_tree::MerkleTree;
 pub use tree::merkle_tree_builder::MerkleTreeBuilder;
 pub use utils::algorithm::Algorithm;
+#[cfg(feature = "encode")]
 pub use utils::hex_encoding::bytes_to_hex;
+#[cfg(feature = "encode")]
+pub use utils::hex_encoding::Encodable;
 
 /// Used dependencies reexport
 pub use anyhow;

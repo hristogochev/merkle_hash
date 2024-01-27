@@ -8,7 +8,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.5"
+merkle_hash = "3.6"
 ```
 
 ### Features
@@ -27,6 +27,8 @@ merkle_hash = "3.5"
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
+* `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
+* `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 
 ### Examples
 
@@ -45,11 +47,11 @@ let master_hash = tree.root.item.hash;
 Iterate over a directory tree, getting the hash of each file and directory:
 
 ```rust,no_run
-use merkle_hash::{bytes_to_hex, MerkleTree};
+use merkle_hash::{Encodable, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 for item in tree {
-    println!("{}: {}", item.path.relative, bytes_to_hex(item.hash));
+    println!("{}: {}", item.path.relative, item.hash.to_hex_string());
 }
 ```
 
@@ -62,6 +64,9 @@ use merkle_hash::{MerkleItem, MerkleTree};
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
+### Release notes for 3.6.0
+* The duplication of children paths for directories is now hidden behind the `retain` feature.
+* The functions for encoding a hash into a hexadecimal string have now been hidden behind the `encode` feature.
 
 ### Versioning
 

@@ -1,3 +1,4 @@
+#[cfg(feature = "encode")]
 /// Converts a hash to a hex string
 pub fn bytes_to_hex(bytes: impl AsRef<[u8]>) -> String {
     let mut s = String::new();
@@ -8,3 +9,21 @@ pub fn bytes_to_hex(bytes: impl AsRef<[u8]>) -> String {
     }
     s
 }
+
+
+#[cfg(feature = "encode")]
+pub trait Encodable {
+    fn to_hex_string(&self) -> String;
+}
+
+#[cfg(feature = "encode")]
+impl Encodable for Vec<u8> {
+    fn to_hex_string(&self) -> String { bytes_to_hex(self) }
+}
+
+#[cfg(feature = "encode")]
+impl Encodable for &[u8] {
+    fn to_hex_string(&self) -> String { bytes_to_hex(self) }
+}
+
+

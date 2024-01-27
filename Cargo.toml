@@ -1,6 +1,6 @@
 [package]
 name = "merkle_hash"
-version = "3.5.0"
+version = "3.6.0"
 edition = "2021"
 authors = ["hristogochev"]
 description = "Finds the hashes of all files and directories in a directory tree."
@@ -22,6 +22,8 @@ camino = "1"
 sha2 = { version = "0.10", default-features = false, optional = true }
 
 [features]
-default = ["parallel"]
+default = ["parallel", "encode"]
 parallel = ["rayon"]
 sha = ["sha2"]
+retain = []
+encode = []

@@ -109,19 +109,30 @@ impl MerkleNode {
             contents_hash
         };
 
-        // Get the direct descendant paths
-        #[cfg(feature = "parallel")]
-        let children_iter = children.par_iter();
-
-        #[cfg(not(feature = "parallel"))]
-        let children_iter = children.iter();
-
-        let children_paths = children_iter.map(|child| child.item.path.clone()).collect();
+        #[cfg(feature = "retain")]
+            // Get the direct descendant paths
+            let children_paths = Self::get_children_paths(&children);
 
         // Returns the newly created node with its data
-        let item = MerkleItem::new(path, hash, children_paths);
+
+        #[cfg(feature = "retain")]
+            let item = MerkleItem::new(path, hash, children_paths);
+        #[cfg(not(feature = "retain"))]
+            let item = MerkleItem::new(path, hash);
+
         let node = MerkleNode { item, children };
 
         Ok(node)
+    }
+
+    #[cfg(feature = "retain")]
+    fn get_children_paths(children: &BTreeSet<MerkleNode>) -> BTreeSet<MerklePath> {
+        #[cfg(feature = "parallel")]
+            let children_iter = children.par_iter();
+
+        #[cfg(not(feature = "parallel"))]
+            let children_iter = children.iter();
+
+        children_iter.map(|child| child.item.path.clone()).collect()
     }
 }
