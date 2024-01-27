@@ -22,8 +22,8 @@ camino = "1"
 sha2 = { version = "0.10", default-features = false, optional = true }
 
 [features]
-default = ["parallel", "encode"]
+default = ["parallel", "convert"]
 parallel = ["rayon"]
 sha = ["sha2"]
 retain = []
-encode = []
+convert = []
