@@ -12,7 +12,9 @@ pub fn bytes_to_hex(bytes: impl AsRef<[u8]>) -> String {
 
 
 #[cfg(feature = "encode")]
+/// Utility trait for converting hashes to hex strings
 pub trait Encodable {
+    /// Converts a hash to a hex string
     fn to_hex_string(&self) -> String;
 }
 
