@@ -64,7 +64,7 @@ use merkle_hash::{MerkleItem, MerkleTree};
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
-### Release notes for 3.6.0
+### Release notes for 3.6
 * The duplication of children paths for directories is now hidden behind the `retain` feature.
 * The functions for encoding a hash into a hexadecimal string have now been hidden behind the `encode` feature.
 
