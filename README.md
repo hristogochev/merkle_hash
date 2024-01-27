@@ -27,7 +27,7 @@ merkle_hash = "3.6"
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
-* `convert` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
+* `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 
 ### Examples

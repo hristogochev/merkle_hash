@@ -26,7 +26,7 @@ merkle_hash = "3.6"
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
-* `convert` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
+* `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 
 # Example: Get the master hash of a directory tree:
@@ -73,9 +73,9 @@ pub use tree::merkle_node::MerkleNode;
 pub use tree::merkle_tree::MerkleTree;
 pub use tree::merkle_tree_builder::MerkleTreeBuilder;
 pub use utils::algorithm::Algorithm;
-#[cfg(feature = "convert")]
+#[cfg(feature = "encode")]
 pub use utils::hex_encoding::bytes_to_hex;
-#[cfg(feature = "convert")]
+#[cfg(feature = "encode")]
 pub use utils::hex_encoding::Encodable;
 
 /// Used dependencies reexport
