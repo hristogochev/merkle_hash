@@ -35,7 +35,7 @@ merkle_hash = "3.6"
 Get the master hash of a directory tree:
 
 ```rust,no_run
-use merkle_hash::{Algorithm, MerkleTree};
+use merkle_hash::{algorithm::Blake3, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory")
     .algorithm(Algorithm::Blake3)
@@ -62,7 +62,7 @@ use std::collections::BTreeSet;
 use merkle_hash::{MerkleItem, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory").build()?;
-let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
+let btree_set: BTreeSet<_> = tree.into_iter().collect();
 ```
 ### Release notes for 3.6
 * The duplication of children paths for directories is now hidden behind the `retain` feature.

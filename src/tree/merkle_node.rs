@@ -9,30 +9,30 @@ use rayon::prelude::*;
 
 use crate::components::merkle_item::MerkleItem;
 use crate::components::merkle_path::MerklePath;
-use crate::utils::algorithm::Algorithm;
+use crate::utils::algorithm::{HashingAlgorithm, MerkleHashAlgorithm};
 
 /// Represents a single node on the merkle tree
 #[derive(Eq, PartialEq, Debug, Clone)]
-pub struct MerkleNode {
-    pub item: MerkleItem,
-    pub children: BTreeSet<MerkleNode>,
+pub struct MerkleNode<const N: usize> {
+    pub item: MerkleItem<N>,
+    pub children: BTreeSet<MerkleNode<N>>,
 }
 
-impl PartialOrd<Self> for MerkleNode {
+impl<const N: usize> PartialOrd<Self> for MerkleNode<N> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         self.item.partial_cmp(&other.item)
     }
 }
 
-impl Ord for MerkleNode {
+impl<const N: usize> Ord for MerkleNode<N> {
     fn cmp(&self, other: &Self) -> Ordering {
         self.item.cmp(&other.item)
     }
 }
 
-impl MerkleNode {
+impl<const N: usize> MerkleNode<N> {
     /// Creates a new root node
-    pub fn root(root: &str, hash_names: bool, algorithm: Algorithm) -> Result<Self> {
+    pub fn root<A: HashingAlgorithm<N>>(root: &str, hash_names: bool, algorithm: A) -> Result<Self> {
         // Creates a new empty relative path, as this is the root
         let relative_path = Utf8PathBuf::from("");
 
@@ -48,18 +48,18 @@ impl MerkleNode {
 
     /// Indexes a new node, finding its relative and absolute paths, its file/directory hash
     /// and the same for all of its descendants
-    fn index(
+    fn index<A: HashingAlgorithm<N>>(
         root: &str,
         path: MerklePath,
         hash_names: bool,
-        algorithm: &Algorithm,
-    ) -> Result<MerkleNode> {
+        algorithm: &A,
+    ) -> Result<MerkleNode<N>> {
         // Indexes its direct descendants for their hashes and paths
         let children = if path.absolute.is_dir() {
             let read_dir = fs::read_dir(&path.absolute)?;
 
             #[cfg(feature = "parallel")]
-            let read_dir = read_dir.par_bridge();
+                let read_dir = read_dir.par_bridge();
 
             read_dir
                 .map(|entry| {
@@ -72,16 +72,16 @@ impl MerkleNode {
                     let node = Self::index(root, path, hash_names, algorithm)?;
                     Ok(node)
                 })
-                .collect::<Result<BTreeSet<MerkleNode>>>()?
+                .collect::<Result<BTreeSet<MerkleNode<N>>>>()?
         } else {
             BTreeSet::new()
         };
 
         // Finds the node's contents hash
-        let contents_hash: Vec<u8> = if path.absolute.is_dir() {
+        let contents_hash: [u8; N] = if path.absolute.is_dir() {
             let hashes: Vec<_> = children
                 .iter()
-                .map(|child| child.item.hash.as_slice())
+                .map(|child| &child.item.hash)
                 .collect();
 
             match algorithm.compute_merkle_hash(&hashes) {
@@ -96,7 +96,7 @@ impl MerkleNode {
         };
 
         // Check if names should be included in the hashing results and get the output hash
-        let hash: Vec<u8> = if hash_names {
+        let hash: [u8; N] = if hash_names {
             // Gets the node path's name
             let name = path
                 .absolute
@@ -126,7 +126,7 @@ impl MerkleNode {
     }
 
     #[cfg(feature = "retain")]
-    fn get_children_paths(children: &BTreeSet<MerkleNode>) -> BTreeSet<MerklePath> {
+    fn get_children_paths(children: &BTreeSet<MerkleNode<N>>) -> BTreeSet<MerklePath> {
         #[cfg(feature = "parallel")]
             let children_iter = children.par_iter();
 

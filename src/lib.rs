@@ -31,10 +31,10 @@ merkle_hash = "3.6"
 
 # Example: Get the master hash of a directory tree:
 ```
-use merkle_hash::{Algorithm, MerkleTree};
+use merkle_hash::{algorithm::Blake3, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory")
-    .algorithm(Algorithm::Blake3)
+    .algorithm(Blake3)
     .hash_names(false)
     .build()?;
 let master_hash = tree.root.item.hash;
@@ -56,14 +56,16 @@ use std::collections::BTreeSet;
 use merkle_hash::{MerkleItem, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory").build()?;
-let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
+let btree_set: BTreeSet<_> = tree.into_iter().collect();
 ```
  */
 
-mod components;
-mod iters;
-mod tree;
-mod utils;
+/// Used dependencies reexport
+pub use anyhow;
+pub use blake3;
+pub use camino;
+#[cfg(feature = "parallel")]
+pub use rayon;
 
 pub use components::merkle_item::MerkleItem;
 pub use components::merkle_path::MerklePath;
@@ -72,15 +74,13 @@ pub use iters::merkle_node_iter::MerkleNodeIter;
 pub use tree::merkle_node::MerkleNode;
 pub use tree::merkle_tree::MerkleTree;
 pub use tree::merkle_tree_builder::MerkleTreeBuilder;
-pub use utils::algorithm::Algorithm;
 #[cfg(feature = "encode")]
 pub use utils::hex_encoding::bytes_to_hex;
 #[cfg(feature = "encode")]
 pub use utils::hex_encoding::Encodable;
+pub use utils::algorithm;
 
-/// Used dependencies reexport
-pub use anyhow;
-pub use blake3;
-pub use camino;
-#[cfg(feature = "parallel")]
-pub use rayon;
+mod components;
+mod iters;
+mod tree;
+mod utils;

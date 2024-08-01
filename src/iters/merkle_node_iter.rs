@@ -6,17 +6,17 @@ use crate::tree::merkle_node::MerkleNode;
 
 /// Node iterator
 #[derive(Default)]
-pub struct MerkleNodeIter<'a> {
-    value: Option<&'a MerkleItem>,
-    children: Option<Iter<'a, MerkleNode>>,
-    parent: Option<Box<MerkleNodeIter<'a>>>,
+pub struct MerkleNodeIter<'a, const N: usize> {
+    value: Option<&'a MerkleItem<N>>,
+    children: Option<Iter<'a, MerkleNode<N>>>,
+    parent: Option<Box<MerkleNodeIter<'a, N>>>,
 }
 
-impl<'a> MerkleNodeIter<'a> {
+impl<'a, const N: usize> MerkleNodeIter<'a, N> {
     pub fn new(
-        value: &'a MerkleItem,
-        children: Iter<'a, MerkleNode>,
-        parent: Option<Box<MerkleNodeIter<'a>>>,
+        value: &'a MerkleItem<N>,
+        children: Iter<'a, MerkleNode<N>>,
+        parent: Option<Box<MerkleNodeIter<'a, N>>>,
     ) -> Self {
         Self {
             value: Some(value),
@@ -26,8 +26,8 @@ impl<'a> MerkleNodeIter<'a> {
     }
 }
 
-impl<'a> Iterator for MerkleNodeIter<'a> {
-    type Item = &'a MerkleItem;
+impl<'a,const N: usize> Iterator for MerkleNodeIter<'a,N> {
+    type Item = &'a MerkleItem<N>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(value) = self.value.take() {
@@ -53,21 +53,21 @@ impl<'a> Iterator for MerkleNodeIter<'a> {
     }
 }
 
-impl MerkleNode {
+impl<const N: usize> MerkleNode<N> {
     /// Returns an iterator over each file and directory descendant of the current node
-    pub fn iter(&self) -> MerkleNodeIter<'_> {
+    pub fn iter(&self) -> MerkleNodeIter<'_,N> {
         MerkleNodeIter::new(&self.item, self.children.iter(), None)
     }
 }
 
-impl<'a> IntoIterator for &'a MerkleNode {
-    type Item = &'a MerkleItem;
+impl<'a,const N: usize> IntoIterator for &'a MerkleNode<N> {
+    type Item = &'a MerkleItem<N>;
 
-    type IntoIter = MerkleNodeIter<'a>;
+    type IntoIter = MerkleNodeIter<'a,N>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 
-impl<'a> FusedIterator for MerkleNodeIter<'a> {}
+impl<'a,const N: usize> FusedIterator for MerkleNodeIter<'a,N> {}

@@ -5,17 +5,17 @@ use crate::tree::merkle_node::MerkleNode;
 
 /// Owned node iterator
 #[derive(Default)]
-pub struct MerkleNodeIntoIter {
-    value: Option<MerkleItem>,
-    children: Option<IntoIter<MerkleNode>>,
-    parent: Option<Box<MerkleNodeIntoIter>>,
+pub struct MerkleNodeIntoIter<const N: usize> {
+    value: Option<MerkleItem<N>>,
+    children: Option<IntoIter<MerkleNode<N>>>,
+    parent: Option<Box<MerkleNodeIntoIter<N>>>,
 }
 
-impl MerkleNodeIntoIter {
+impl<const N: usize> MerkleNodeIntoIter<N> {
     pub fn new(
-        value: MerkleItem,
-        children: IntoIter<MerkleNode>,
-        parent: Option<Box<MerkleNodeIntoIter>>,
+        value: MerkleItem<N>,
+        children: IntoIter<MerkleNode<N>>,
+        parent: Option<Box<MerkleNodeIntoIter<N>>>,
     ) -> Self {
         Self {
             value: Some(value),
@@ -25,8 +25,8 @@ impl MerkleNodeIntoIter {
     }
 }
 
-impl Iterator for MerkleNodeIntoIter {
-    type Item = MerkleItem;
+impl<const N:usize> Iterator for MerkleNodeIntoIter<N> {
+    type Item = MerkleItem<N>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(value) = self.value.take() {
@@ -51,10 +51,10 @@ impl Iterator for MerkleNodeIntoIter {
     }
 }
 
-impl IntoIterator for MerkleNode {
-    type Item = MerkleItem;
+impl<const N:usize> IntoIterator for MerkleNode<N> {
+    type Item = MerkleItem<N>;
 
-    type IntoIter = MerkleNodeIntoIter;
+    type IntoIter = MerkleNodeIntoIter<N>;
 
     fn into_iter(self) -> Self::IntoIter {
         MerkleNodeIntoIter::new(self.item, self.children.into_iter(), None)
