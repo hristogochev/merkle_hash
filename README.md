@@ -65,8 +65,8 @@ let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
 ### Release notes for 3.7
-* Better error handling using a custom IndexingError type.
 * Removed dependency on [anyhow](https://crates.io/crates/anyhow).
+* Better error handling using a custom `IndexingError` type.
 
 ### Versioning
 
