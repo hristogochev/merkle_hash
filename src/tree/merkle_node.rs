@@ -9,7 +9,7 @@ use rayon::prelude::*;
 
 use crate::components::merkle_item::MerkleItem;
 use crate::components::merkle_path::MerklePath;
-use crate::utils::algorithm::{HashingAlgorithm, MerkleHashAlgorithm};
+use crate::utils::algorithm::{Algorithm, MerkleHashAlgorithm};
 
 /// Represents a single node on the merkle tree
 #[derive(Eq, PartialEq, Debug, Clone)]
@@ -32,7 +32,7 @@ impl<const N: usize> Ord for MerkleNode<N> {
 
 impl<const N: usize> MerkleNode<N> {
     /// Creates a new root node
-    pub fn root<A: HashingAlgorithm<N>>(root: &str, hash_names: bool, algorithm: A) -> Result<Self> {
+    pub fn root<A: Algorithm<N>>(root: &str, hash_names: bool, algorithm: A) -> Result<Self> {
         // Creates a new empty relative path, as this is the root
         let relative_path = Utf8PathBuf::from("");
 
@@ -48,7 +48,7 @@ impl<const N: usize> MerkleNode<N> {
 
     /// Indexes a new node, finding its relative and absolute paths, its file/directory hash
     /// and the same for all of its descendants
-    fn index<A: HashingAlgorithm<N>>(
+    fn index<A: Algorithm<N>>(
         root: &str,
         path: MerklePath,
         hash_names: bool,

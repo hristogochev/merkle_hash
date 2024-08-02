@@ -2,10 +2,10 @@ use anyhow::Result;
 
 use crate::MerkleTree;
 use crate::tree::merkle_node::MerkleNode;
-use crate::utils::algorithm::{HashingAlgorithm};
+use crate::utils::algorithm::{Algorithm};
 
 /// Utility builder pattern
-pub struct MerkleTreeBuilder<const N: usize, A: HashingAlgorithm<N>> {
+pub struct MerkleTreeBuilder<const N: usize, A: Algorithm<N>> {
     /// Absolute root path of the tree
     pub(crate) absolute_root_path: String,
     /// Whether to include names in the hashes of files and directories, default is false
@@ -14,7 +14,7 @@ pub struct MerkleTreeBuilder<const N: usize, A: HashingAlgorithm<N>> {
     pub(crate) algorithm: A,
 }
 
-impl<const N: usize, A: HashingAlgorithm<N>> MerkleTreeBuilder<N, A> {
+impl<const N: usize, A: Algorithm<N>> MerkleTreeBuilder<N, A> {
     /// Sets whether to include the names of the files and directories in the hashing process, default is **false**
     pub fn hash_names(mut self, hash_names: bool) -> Self {
         self.hash_names = hash_names;
@@ -22,7 +22,7 @@ impl<const N: usize, A: HashingAlgorithm<N>> MerkleTreeBuilder<N, A> {
     }
 
     /// Sets the hashing algorithm to use, default is **blake3**
-    pub fn algorithm<const N2: usize, A2: HashingAlgorithm<N2>>(self, algorithm: A2) -> MerkleTreeBuilder<N2, A2> {
+    pub fn algorithm<const N2: usize, A2: Algorithm<N2>>(self, algorithm: A2) -> MerkleTreeBuilder<N2, A2> {
         MerkleTreeBuilder {
             absolute_root_path: self.absolute_root_path,
             hash_names: self.hash_names,
