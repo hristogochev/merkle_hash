@@ -1,8 +1,13 @@
 use std::cmp::Ordering;
 use std::collections::BTreeSet;
 use std::fs;
+#[cfg(not(feature = "camino"))]
+use std::path::PathBuf;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result};
+#[cfg(feature = "camino")]
+use anyhow::bail;
+#[cfg(feature = "camino")]
 use camino::Utf8PathBuf;
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -34,10 +39,17 @@ impl MerkleNode {
     /// Creates a new root node
     pub fn root(root: &str, hash_names: bool, algorithm: Algorithm) -> Result<Self> {
         // Creates a new empty relative path, as this is the root
-        let relative_path = Utf8PathBuf::from("");
+        #[cfg(not(feature = "camino"))]
+            let relative_path = PathBuf::from("");
+        #[cfg(feature = "camino")]
+            let relative_path = Utf8PathBuf::from("");
 
         // Gets an owned copy of the absolute path
-        let absolute_path = Utf8PathBuf::from(root);
+        #[cfg(not(feature = "camino"))]
+            let absolute_path = PathBuf::from(root);
+        #[cfg(feature = "camino")]
+            let absolute_path = Utf8PathBuf::from(root);
+
 
         // Creates a new merkle path based on them both
         let path = MerklePath::new(relative_path, absolute_path);
@@ -59,11 +71,14 @@ impl MerkleNode {
             let read_dir = fs::read_dir(&path.absolute)?;
 
             #[cfg(feature = "parallel")]
-            let read_dir = read_dir.par_bridge();
+                let read_dir = read_dir.par_bridge();
 
             read_dir
                 .map(|entry| {
-                    let absolute_path = match Utf8PathBuf::from_path_buf(entry?.path()) {
+                    #[cfg(not(feature = "camino"))]
+                        let absolute_path = entry?.path();
+                    #[cfg(feature = "camino")]
+                        let absolute_path = match Utf8PathBuf::from_path_buf(entry?.path()) {
                         Ok(absolute_path) => absolute_path,
                         Err(path) => bail!("Path is not valid UTF8 path: {}", path.display()),
                     };
@@ -90,7 +105,7 @@ impl MerkleNode {
             }
         } else {
             let file_bytes = fs::read(&path.absolute)
-                .with_context(|| format!("Unable to read file: {}", path.absolute))?;
+                .with_context(|| format!("Unable to read file: {:?}", path.absolute))?;
 
             algorithm.compute_hash(&file_bytes)
         };
@@ -101,7 +116,10 @@ impl MerkleNode {
             let name = path
                 .absolute
                 .file_name()
-                .with_context(|| format!("Unable to read file: {}", path.absolute))?;
+                .with_context(|| format!("Unable to read file: {:?}", path.absolute))?;
+
+            #[cfg(not(feature = "camino"))]
+                let name = name.to_str().with_context(|| format!("File name is not valid UTF-8: {:?}", name))?;
 
             // Create a hashing stack
             algorithm.compute_hash_from_slices(name.as_bytes(), &contents_hash)

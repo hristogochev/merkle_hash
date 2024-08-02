@@ -81,6 +81,7 @@ pub use utils::hex_encoding::Encodable;
 /// Used dependencies reexport
 pub use anyhow;
 pub use blake3;
+#[cfg(feature = "camino")]
 pub use camino;
 #[cfg(feature = "parallel")]
 pub use rayon;
