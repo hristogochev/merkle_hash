@@ -29,18 +29,15 @@ impl Algorithm {
         }
 
         #[cfg(feature = "parallel")]
-        let chunks = hashes.par_chunks(2);
+            let chunks = hashes.par_chunks(2);
 
         #[cfg(not(feature = "parallel"))]
-        let chunks = hashes.chunks(2);
+            let chunks = hashes.chunks(2);
 
         let output: Vec<_> = chunks
             .flat_map(|hash_chunks| {
                 let first = hash_chunks.first()?;
-                let second = match hash_chunks.get(1) {
-                    Some(second) => second,
-                    None => first,
-                };
+                let second = hash_chunks.get(1).unwrap_or(first);
                 let hash = self.compute_hash_from_slices(first, second);
                 Some(hash)
             })

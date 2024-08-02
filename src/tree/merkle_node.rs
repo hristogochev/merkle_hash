@@ -20,7 +20,7 @@ pub struct MerkleNode {
 
 impl PartialOrd<Self> for MerkleNode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.item.partial_cmp(&other.item)
+        Some(self.cmp(other))
     }
 }
 

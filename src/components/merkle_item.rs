@@ -1,7 +1,8 @@
-use crate::components::merkle_path::MerklePath;
 use std::cmp::Ordering;
 #[cfg(feature = "retain")]
 use std::collections::BTreeSet;
+
+use crate::components::merkle_path::MerklePath;
 
 /// Holds the path, hash and children paths of a file or directory
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
@@ -32,7 +33,7 @@ impl MerkleItem {
 
 impl PartialOrd<Self> for MerkleItem {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.path.partial_cmp(&other.path)
+        Some(self.cmp(other))
     }
 }
 
