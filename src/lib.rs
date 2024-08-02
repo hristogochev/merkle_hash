@@ -60,10 +60,11 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
  */
 
-mod components;
-mod iters;
-mod tree;
-mod utils;
+/// Used dependencies reexport
+pub use blake3;
+pub use camino;
+#[cfg(feature = "parallel")]
+pub use rayon;
 
 pub use components::merkle_item::MerkleItem;
 pub use components::merkle_path::MerklePath;
@@ -78,9 +79,9 @@ pub use utils::hex_encoding::bytes_to_hex;
 #[cfg(feature = "encode")]
 pub use utils::hex_encoding::Encodable;
 
-/// Used dependencies reexport
-pub use anyhow;
-pub use blake3;
-pub use camino;
-#[cfg(feature = "parallel")]
-pub use rayon;
+mod components;
+mod iters;
+mod tree;
+mod utils;
+pub mod error;
+
