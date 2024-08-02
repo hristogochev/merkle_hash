@@ -4,6 +4,7 @@ use std::path::{PathBuf, StripPrefixError};
 
 use camino::Utf8PathBuf;
 
+/// Types of errors that can occur when recursively indexing a directory for its hashes.
 #[derive(Debug)]
 pub enum IndexingError {
     PathIsNotValidUtf8(PathBuf),
