@@ -8,7 +8,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.6"
+merkle_hash = "3.7"
 ```
 
 ### Features
@@ -64,9 +64,9 @@ use merkle_hash::{MerkleItem, MerkleTree};
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<_> = tree.into_iter().collect();
 ```
-### Release notes for 3.6
-* The duplication of children paths for directories is now hidden behind the `retain` feature.
-* The functions for encoding a hash into a hexadecimal string have now been hidden behind the `encode` feature.
+### Release notes for 3.7
+* Removed dependency on [anyhow](https://crates.io/crates/anyhow).
+* Better error handling using a custom `IndexingError` type.
 
 ### Versioning
 
@@ -78,7 +78,6 @@ let btree_set: BTreeSet<_> = tree.into_iter().collect();
 
 * [rayon](https://crates.io/crates/rayon) for multithreaded directory reading and hashing.
 * [camino](https://crates.io/crates/camino) to ensure that paths are always utf-8.
-* [anyhow](https://crates.io/crates/anyhow) to ease-out the handling of errors.
 * [blake3](https://crates.io/crates/blake3) for the blake3 hashing of file contents.
 * [sha2](https://crates.io/crates/sha2) for the sha256 and sha512 hashing of file contents.
 

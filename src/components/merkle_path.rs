@@ -1,7 +1,8 @@
-use camino::Utf8PathBuf;
 use std::cmp::Ordering;
 
-/// An utility struct that contains an absolute path and a relative path
+use camino::Utf8PathBuf;
+
+/// A utility struct that contains an absolute path and a relative path
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 pub struct MerklePath {
     pub relative: Utf8PathBuf,
@@ -19,7 +20,7 @@ impl MerklePath {
 
 impl PartialOrd<Self> for MerklePath {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.relative.partial_cmp(&other.relative)
+        Some(self.cmp(other))
     }
 }
 
