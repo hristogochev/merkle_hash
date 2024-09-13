@@ -1,7 +1,7 @@
+use crate::error::IndexingError;
+use crate::MerkleTree;
 use crate::tree::merkle_node::MerkleNode;
 use crate::utils::algorithm::Algorithm;
-use crate::MerkleTree;
-use anyhow::Result;
 
 /// Utility builder pattern
 pub struct MerkleTreeBuilder {
@@ -27,7 +27,7 @@ impl MerkleTreeBuilder {
     }
 
     /// Builds the hash tree by indexing all of its descendants
-    pub fn build(self) -> Result<MerkleTree> {
+    pub fn build(self) -> Result<MerkleTree, IndexingError> {
         let root = MerkleNode::root(&self.absolute_root_path, self.hash_names, self.algorithm)?;
         Ok(MerkleTree { root })
     }

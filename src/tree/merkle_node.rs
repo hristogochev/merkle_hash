@@ -3,10 +3,6 @@ use std::collections::BTreeSet;
 use std::fs;
 #[cfg(not(feature = "camino"))]
 use std::path::PathBuf;
-
-use anyhow::{Context, Result};
-#[cfg(feature = "camino")]
-use anyhow::bail;
 #[cfg(feature = "camino")]
 use camino::Utf8PathBuf;
 #[cfg(feature = "parallel")]
@@ -14,6 +10,7 @@ use rayon::prelude::*;
 
 use crate::components::merkle_item::MerkleItem;
 use crate::components::merkle_path::MerklePath;
+use crate::error::IndexingError;
 use crate::utils::algorithm::Algorithm;
 
 /// Represents a single node on the merkle tree
@@ -25,7 +22,7 @@ pub struct MerkleNode {
 
 impl PartialOrd<Self> for MerkleNode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.item.partial_cmp(&other.item)
+        Some(self.cmp(other))
     }
 }
 
@@ -37,7 +34,7 @@ impl Ord for MerkleNode {
 
 impl MerkleNode {
     /// Creates a new root node
-    pub fn root(root: &str, hash_names: bool, algorithm: Algorithm) -> Result<Self> {
+    pub fn root(root: &str, hash_names: bool, algorithm: Algorithm) -> Result<Self, IndexingError> {
         // Creates a new empty relative path, as this is the root
         #[cfg(not(feature = "camino"))]
             let relative_path = PathBuf::from("");
@@ -65,29 +62,45 @@ impl MerkleNode {
         path: MerklePath,
         hash_names: bool,
         algorithm: &Algorithm,
-    ) -> Result<MerkleNode> {
+    ) -> Result<MerkleNode, IndexingError> {
         // Indexes its direct descendants for their hashes and paths
         let children = if path.absolute.is_dir() {
-            let read_dir = fs::read_dir(&path.absolute)?;
+            let read_dir = match fs::read_dir(&path.absolute) {
+                Ok(ok) => ok,
+                Err(err) => return Err(IndexingError::UnableToReadDir(path.absolute, err))
+            };
 
             #[cfg(feature = "parallel")]
                 let read_dir = read_dir.par_bridge();
 
             read_dir
                 .map(|entry| {
-                    #[cfg(not(feature = "camino"))]
-                        let absolute_path = entry?.path();
-                    #[cfg(feature = "camino")]
-                        let absolute_path = match Utf8PathBuf::from_path_buf(entry?.path()) {
-                        Ok(absolute_path) => absolute_path,
-                        Err(path) => bail!("Path is not valid UTF8 path: {}", path.display()),
+
+                    let entry = match entry {
+                        Ok(entry) => entry,
+                        Err(err) => return Err(IndexingError::UnableToReadDirEntry(path.absolute.clone(), err))
                     };
-                    let relative_path = absolute_path.strip_prefix(root)?.to_path_buf();
+
+                    #[cfg(not(feature = "camino"))]
+                    let absolute_path = entry.path();
+
+                    #[cfg(feature = "camino")]
+                    let absolute_path = Utf8PathBuf::from_path_buf(entry.path()).map_err(|path| {
+                        IndexingError::PathIsNotValidUtf8(path)
+                    })?;
+
+                    let relative_path = match absolute_path.strip_prefix(root) {
+                        Ok(relative_path) => relative_path.to_path_buf(),
+                        Err(err) => return Err(IndexingError::UnableToStripRootPrefix(absolute_path, root.to_string(), err))
+                    };
+
                     let path = MerklePath::new(relative_path, absolute_path);
+
                     let node = Self::index(root, path, hash_names, algorithm)?;
+
                     Ok(node)
                 })
-                .collect::<Result<BTreeSet<MerkleNode>>>()?
+                .collect::<Result<BTreeSet<MerkleNode>, IndexingError>>()?
         } else {
             BTreeSet::new()
         };
@@ -104,8 +117,10 @@ impl MerkleNode {
                 None => algorithm.compute_hash(b""),
             }
         } else {
-            let file_bytes = fs::read(&path.absolute)
-                .with_context(|| format!("Unable to read file: {:?}", path.absolute))?;
+            let file_bytes = match fs::read(&path.absolute) {
+                Ok(file_bytes) => file_bytes,
+                Err(err) => return Err(IndexingError::UnableToReadFile(path.absolute, err))
+            };
 
             algorithm.compute_hash(&file_bytes)
         };
@@ -113,13 +128,16 @@ impl MerkleNode {
         // Check if names should be included in the hashing results and get the output hash
         let hash: Vec<u8> = if hash_names {
             // Gets the node path's name
-            let name = path
-                .absolute
-                .file_name()
-                .with_context(|| format!("Unable to read file: {:?}", path.absolute))?;
+            let name = match path.absolute.file_name(){
+                None => return Err(IndexingError::UnableToReadFileName(path.absolute)),
+                Some(name) => name,
+            };
 
-            #[cfg(not(feature = "camino"))]
-                let name = name.to_str().with_context(|| format!("File name is not valid UTF-8: {:?}", name))?;
+            #[cfg(not(feature="camino"))]
+            let name = match name.to_str(){
+                None => return Err(IndexingError::UnableToReadFileName(path.absolute)),
+                Some(name) => name,
+            };
 
             // Create a hashing stack
             algorithm.compute_hash_from_slices(name.as_bytes(), &contents_hash)

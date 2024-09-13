@@ -7,7 +7,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.6"
+merkle_hash = "3.7"
 ```
 
 # Features
@@ -60,10 +60,12 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
  */
 
-mod components;
-mod iters;
-mod tree;
-mod utils;
+/// Used dependencies reexport
+pub use blake3;
+#[cfg(feature = "camino")]
+pub use camino;
+#[cfg(feature = "parallel")]
+pub use rayon;
 
 pub use components::merkle_item::MerkleItem;
 pub use components::merkle_path::MerklePath;
@@ -78,10 +80,9 @@ pub use utils::hex_encoding::bytes_to_hex;
 #[cfg(feature = "encode")]
 pub use utils::hex_encoding::Encodable;
 
-/// Used dependencies reexport
-pub use anyhow;
-pub use blake3;
-#[cfg(feature = "camino")]
-pub use camino;
-#[cfg(feature = "parallel")]
-pub use rayon;
+mod components;
+mod iters;
+mod tree;
+mod utils;
+/// Different types of errors for this crate
+pub mod error;
