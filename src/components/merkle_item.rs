@@ -1,11 +1,12 @@
 use std::cmp::Ordering;
+use bincode::{Decode, Encode};
 #[cfg(feature = "retain")]
 use std::collections::BTreeSet;
 
 use crate::components::merkle_path::MerklePath;
 
 /// Holds the path, hash and children paths of a file or directory
-#[derive(Eq, PartialEq, Clone, Debug, Hash)]
+#[derive(Eq, PartialEq, Clone, Debug, Hash, Decode, Encode)]
 pub struct MerkleItem {
     pub path: MerklePath,
     pub hash: Vec<u8>,

@@ -1,11 +1,15 @@
 use std::cmp::Ordering;
 
+use bincode::{Decode, Encode};
 use camino::Utf8PathBuf;
 
 /// A utility struct that contains an absolute path and a relative path
-#[derive(Eq, PartialEq, Clone, Debug, Hash)]
+#[derive(Eq, PartialEq, Clone, Debug, Hash, Decode, Encode)]
 pub struct MerklePath {
+    #[bincode(with_serde)]
     pub relative: Utf8PathBuf,
+    
+    #[bincode(with_serde)]
     pub absolute: Utf8PathBuf,
 }
 
