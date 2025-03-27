@@ -1,3 +1,4 @@
+use bincode::{Decode, Encode};
 use crate::components::merkle_item::MerkleItem;
 use crate::iters::merkle_node_into_iter::MerkleNodeIntoIter;
 use crate::iters::merkle_node_iter::MerkleNodeIter;
@@ -6,6 +7,7 @@ use crate::tree::merkle_tree_builder::MerkleTreeBuilder;
 use crate::utils::algorithm::Algorithm;
 
 /// Represents an indexed directory tree
+#[derive(Encode, Decode)]
 pub struct MerkleTree {
     pub root: MerkleNode,
 }
