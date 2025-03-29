@@ -19,7 +19,7 @@ rayon = { version = "1", optional = true }
 blake3 = "1"
 camino = { version = "1", features = [ "serde1" ] }
 sha2 = { version = "0.10", default-features = false, optional = true }
-bincode = { version = "2.0.1", features = [ "serde" ] }
+bincode = { version = "2.0.1", features = [ "serde" ], optional = true }
 
 [features]
 default = ["parallel", "encode"]
@@ -27,3 +27,4 @@ parallel = ["rayon"]
 sha = ["sha2"]
 retain = []
 encode = []
+bincode = [ "dep:bincode", "camino/serde1" ]

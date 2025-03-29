@@ -1,9 +1,11 @@
 use std::cmp::Ordering;
 use std::collections::BTreeSet;
 use std::fs;
-
-use bincode::{Decode, Encode};
 use camino::Utf8PathBuf;
+
+#[cfg(feature = "bincode")]
+use bincode::{Decode, Encode};
+
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
 
@@ -13,7 +15,8 @@ use crate::error::IndexingError;
 use crate::utils::algorithm::Algorithm;
 
 /// Represents a single node on the merkle tree
-#[derive(Eq, PartialEq, Debug, Clone, Decode, Encode)]
+#[derive(Eq, PartialEq, Debug, Clone)]
+#[cfg_attr(feature = "bincode", derive(Decode, Encode))]
 pub struct MerkleNode {
     pub item: MerkleItem,
     pub children: BTreeSet<MerkleNode>,
