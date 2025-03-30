@@ -28,6 +28,7 @@ merkle_hash = "3.7"
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
 * `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
+* `bincode` - Disabled by default, this feature enables bincode support.
 
 # Example: Get the master hash of a directory tree:
 ```

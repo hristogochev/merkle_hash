@@ -1,32 +1,30 @@
-#[cfg(feature = "camino")]
-use camino::Utf8PathBuf;
-use std::cmp::Ordering;
-#[cfg(not(feature = "camino"))]
-use std::path::PathBuf;
-
 /// A utility struct that contains an absolute path and a relative path
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
+#[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
 pub struct MerklePath {
     #[cfg(feature = "camino")]
-    pub relative: Utf8PathBuf,
+    #[cfg_attr(feature = "bincode", bincode(with_serde))]
+    pub relative: camino::Utf8PathBuf,
     #[cfg(feature = "camino")]
-    pub absolute: Utf8PathBuf,
+    #[cfg_attr(feature = "bincode", bincode(with_serde))]
+    pub absolute: camino::Utf8PathBuf,
+    
     #[cfg(not(feature = "camino"))]
-    pub relative: PathBuf,
+    pub relative: std::path::PathBuf,
     #[cfg(not(feature = "camino"))]
-    pub absolute: PathBuf,
+    pub absolute: std::path::PathBuf,
 }
 
 impl MerklePath {
     #[cfg(feature = "camino")]
-    pub fn new(relative_path: Utf8PathBuf, absolute_path: Utf8PathBuf) -> Self {
+    pub fn new(relative_path: camino::Utf8PathBuf, absolute_path: camino::Utf8PathBuf) -> Self {
         Self {
             relative: relative_path,
             absolute: absolute_path,
         }
     }
     #[cfg(not(feature = "camino"))]
-    pub fn new(relative_path: PathBuf, absolute_path: PathBuf) -> Self {
+    pub fn new(relative_path: std::path::PathBuf, absolute_path: std::path::PathBuf) -> Self {
         Self {
             relative: relative_path,
             absolute: absolute_path,
@@ -35,13 +33,13 @@ impl MerklePath {
 }
 
 impl PartialOrd<Self> for MerklePath {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
 
 impl Ord for MerklePath {
-    fn cmp(&self, other: &Self) -> Ordering {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.relative.cmp(&other.relative)
     }
 }

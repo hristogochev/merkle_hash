@@ -1,16 +1,15 @@
 use std::cmp::Ordering;
-#[cfg(feature = "retain")]
-use std::collections::BTreeSet;
 
 use crate::components::merkle_path::MerklePath;
 
 /// Holds the path, hash and children paths of a file or directory
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
+#[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
 pub struct MerkleItem {
     pub path: MerklePath,
     pub hash: Vec<u8>,
     #[cfg(feature = "retain")]
-    pub children_paths: BTreeSet<MerklePath>,
+    pub children_paths: std::collections::BTreeSet<MerklePath>,
 }
 
 impl MerkleItem {
