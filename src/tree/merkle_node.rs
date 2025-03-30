@@ -87,7 +87,7 @@ impl MerkleNode {
 
                     #[cfg(feature = "camino")]
                     let absolute_path = camino::Utf8PathBuf::from_path_buf(entry.path())
-                        .map_err(|path| IndexingError::PathIsNotValidUtf8(path))?;
+                        .map_err(IndexingError::PathIsNotValidUtf8)?;
 
                     let relative_path = match absolute_path.strip_prefix(root) {
                         Ok(relative_path) => relative_path.to_path_buf(),

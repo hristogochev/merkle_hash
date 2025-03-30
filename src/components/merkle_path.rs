@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 /// A utility struct that contains an absolute path and a relative path
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
@@ -33,13 +35,13 @@ impl MerklePath {
 }
 
 impl PartialOrd<Self> for MerklePath {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
 impl Ord for MerklePath {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    fn cmp(&self, other: &Self) -> Ordering {
         self.relative.cmp(&other.relative)
     }
 }

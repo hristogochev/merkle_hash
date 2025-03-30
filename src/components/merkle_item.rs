@@ -21,7 +21,7 @@ impl MerkleItem {
         }
     }
     #[cfg(feature = "retain")]
-    pub fn new(path: MerklePath, hash: Vec<u8>, children_paths: BTreeSet<MerklePath>) -> Self {
+    pub fn new(path: MerklePath, hash: Vec<u8>, children_paths: std::collections::BTreeSet<MerklePath>) -> Self {
         Self {
             path,
             hash,
