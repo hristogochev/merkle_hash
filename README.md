@@ -27,6 +27,7 @@ merkle_hash = "3.7"
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
+* `camino` - Enabled by default, this feature makes all paths UTF-8 validated.
 * `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 * `bincode` - Disabled by default, this feature enables bincode support.
