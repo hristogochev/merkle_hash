@@ -70,4 +70,4 @@ impl<'a> IntoIterator for &'a MerkleNode {
     }
 }
 
-impl<'a> FusedIterator for MerkleNodeIter<'a> {}
+impl FusedIterator for MerkleNodeIter<'_> {}
