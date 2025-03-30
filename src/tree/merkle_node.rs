@@ -1,10 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::BTreeSet;
 use std::fs;
-use camino::Utf8PathBuf;
-
-#[cfg(feature = "bincode")]
-use bincode::{Decode, Encode};
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -16,7 +12,7 @@ use crate::utils::algorithm::Algorithm;
 
 /// Represents a single node on the merkle tree
 #[derive(Eq, PartialEq, Debug, Clone)]
-#[cfg_attr(feature = "bincode", derive(Decode, Encode))]
+#[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
 pub struct MerkleNode {
     pub item: MerkleItem,
     pub children: BTreeSet<MerkleNode>,
@@ -38,10 +34,16 @@ impl MerkleNode {
     /// Creates a new root node
     pub fn root(root: &str, hash_names: bool, algorithm: Algorithm) -> Result<Self, IndexingError> {
         // Creates a new empty relative path, as this is the root
-        let relative_path = Utf8PathBuf::from("");
+        #[cfg(not(feature = "camino"))]
+        let relative_path = std::path::PathBuf::from("");
+        #[cfg(feature = "camino")]
+        let relative_path = camino::Utf8PathBuf::from("");
 
         // Gets an owned copy of the absolute path
-        let absolute_path = Utf8PathBuf::from(root);
+        #[cfg(not(feature = "camino"))]
+        let absolute_path = std::path::PathBuf::from(root);
+        #[cfg(feature = "camino")]
+        let absolute_path = camino::Utf8PathBuf::from(root);
 
         // Creates a new merkle path based on them both
         let path = MerklePath::new(relative_path, absolute_path);
@@ -62,26 +64,40 @@ impl MerkleNode {
         let children = if path.absolute.is_dir() {
             let read_dir = match fs::read_dir(&path.absolute) {
                 Ok(ok) => ok,
-                Err(err) => return Err(IndexingError::UnableToReadDir(path.absolute, err))
+                Err(err) => return Err(IndexingError::UnableToReadDir(path.absolute, err)),
             };
 
             #[cfg(feature = "parallel")]
-                let read_dir = read_dir.par_bridge();
+            let read_dir = read_dir.par_bridge();
 
             read_dir
                 .map(|entry| {
                     let entry = match entry {
                         Ok(entry) => entry,
-                        Err(err) => return Err(IndexingError::UnableToReadDirEntry(path.absolute.clone(), err))
+                        Err(err) => {
+                            return Err(IndexingError::UnableToReadDirEntry(
+                                path.absolute.clone(),
+                                err,
+                            ))
+                        }
                     };
 
-                    let absolute_path = Utf8PathBuf::from_path_buf(entry.path()).map_err(|path| {
-                        IndexingError::PathIsNotValidUtf8(path)
-                    })?;
+                    #[cfg(not(feature = "camino"))]
+                    let absolute_path = entry.path();
+
+                    #[cfg(feature = "camino")]
+                    let absolute_path = camino::Utf8PathBuf::from_path_buf(entry.path())
+                        .map_err(IndexingError::PathIsNotValidUtf8)?;
 
                     let relative_path = match absolute_path.strip_prefix(root) {
                         Ok(relative_path) => relative_path.to_path_buf(),
-                        Err(err) => return Err(IndexingError::UnableToStripRootPrefix(absolute_path, root.to_string(), err))
+                        Err(err) => {
+                            return Err(IndexingError::UnableToStripRootPrefix(
+                                absolute_path,
+                                root.to_string(),
+                                err,
+                            ))
+                        }
                     };
 
                     let path = MerklePath::new(relative_path, absolute_path);
@@ -109,7 +125,7 @@ impl MerkleNode {
         } else {
             let file_bytes = match fs::read(&path.absolute) {
                 Ok(file_bytes) => file_bytes,
-                Err(err) => return Err(IndexingError::UnableToReadFile(path.absolute, err))
+                Err(err) => return Err(IndexingError::UnableToReadFile(path.absolute, err)),
             };
 
             algorithm.compute_hash(&file_bytes)
@@ -118,9 +134,13 @@ impl MerkleNode {
         // Check if names should be included in the hashing results and get the output hash
         let hash: Vec<u8> = if hash_names {
             // Gets the node path's name
-            let name = match path
-                .absolute
-                .file_name() {
+            let name = match path.absolute.file_name() {
+                None => return Err(IndexingError::UnableToReadFileName(path.absolute)),
+                Some(name) => name,
+            };
+
+            #[cfg(not(feature = "camino"))]
+            let name = match name.to_str() {
                 None => return Err(IndexingError::UnableToReadFileName(path.absolute)),
                 Some(name) => name,
             };
@@ -132,15 +152,15 @@ impl MerkleNode {
         };
 
         #[cfg(feature = "retain")]
-            // Get the direct descendant paths
-            let children_paths = Self::get_children_paths(&children);
+        // Get the direct descendant paths
+        let children_paths = Self::get_children_paths(&children);
 
         // Returns the newly created node with its data
 
         #[cfg(feature = "retain")]
-            let item = MerkleItem::new(path, hash, children_paths);
+        let item = MerkleItem::new(path, hash, children_paths);
         #[cfg(not(feature = "retain"))]
-            let item = MerkleItem::new(path, hash);
+        let item = MerkleItem::new(path, hash);
 
         let node = MerkleNode { item, children };
 
@@ -150,10 +170,10 @@ impl MerkleNode {
     #[cfg(feature = "retain")]
     fn get_children_paths(children: &BTreeSet<MerkleNode>) -> BTreeSet<MerklePath> {
         #[cfg(feature = "parallel")]
-            let children_iter = children.par_iter();
+        let children_iter = children.par_iter();
 
         #[cfg(not(feature = "parallel"))]
-            let children_iter = children.iter();
+        let children_iter = children.iter();
 
         children_iter.map(|child| child.item.path.clone()).collect()
     }

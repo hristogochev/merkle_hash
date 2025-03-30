@@ -63,6 +63,7 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 
 /// Used dependencies reexport
 pub use blake3;
+#[cfg(feature = "camino")]
 pub use camino;
 #[cfg(feature = "parallel")]
 pub use rayon;
@@ -86,4 +87,3 @@ mod tree;
 mod utils;
 /// Different types of errors for this crate
 pub mod error;
-
