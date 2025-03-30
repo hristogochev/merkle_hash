@@ -1,11 +1,17 @@
 use std::cmp::Ordering;
 
+#[cfg(feature = "bincode")]
+use bincode::{Decode, Encode};
 use camino::Utf8PathBuf;
 
 /// A utility struct that contains an absolute path and a relative path
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
+#[cfg_attr(feature = "bincode", derive(Decode, Encode))]
 pub struct MerklePath {
+    #[cfg_attr(feature = "bincode", bincode(with_serde))]
     pub relative: Utf8PathBuf,
+    
+    #[cfg_attr(feature = "bincode", bincode(with_serde))]
     pub absolute: Utf8PathBuf,
 }
 
