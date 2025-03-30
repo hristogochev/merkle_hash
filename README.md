@@ -8,7 +8,7 @@ To use this crate, add `merkle_hash` as a dependency to your project's `Cargo.to
 
 ```toml
 [dependencies]
-merkle_hash = "3.7"
+merkle_hash = "3.8"
 ```
 
 ### Features
@@ -66,9 +66,9 @@ use merkle_hash::{MerkleItem, MerkleTree};
 let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
-### Release notes for 3.7
-* Removed dependency on [anyhow](https://crates.io/crates/anyhow).
-* Better error handling using a custom `IndexingError` type.
+### Release notes for 3.8
+ * [Bincode support](https://crates.io/crates/bincode) by [joshtenorio](https://github.com/joshtenorio).
+ * UTF-8 validated paths are now an optional feature, enabled by default.
 
 ### Versioning
 
