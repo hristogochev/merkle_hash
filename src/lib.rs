@@ -31,7 +31,7 @@ merkle_hash = "3.7"
 * `bincode` - Disabled by default, this feature enables bincode support.
 
 # Example: Get the master hash of a directory tree:
-```
+```rust,no_run,ignore
 use merkle_hash::{Algorithm, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory")
@@ -42,7 +42,7 @@ let master_hash = tree.root.item.hash;
 ```
 
 # Example: Iterate over a directory tree, getting the hash of each file and directory:
-```
+```rust,no_run,ignore
 use merkle_hash::{Encodable, MerkleTree};
 
 let tree = MerkleTree::builder("/path/to/directory").build()?;
@@ -52,7 +52,7 @@ for item in tree {
 ```
 
 # Example: Collapse the tree into any linear collection:
-```
+```rust,no_run,ignore
 use std::collections::BTreeSet;
 use merkle_hash::{MerkleItem, MerkleTree};
 
