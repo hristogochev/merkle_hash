@@ -1,29 +1,7 @@
 use std::cmp::Ordering;
 
-/// Represents the type of entry that a MerklePath points to (file, directory, or other)
-#[cfg(feature = "entry-kind")]
-#[derive(Eq, PartialEq, Clone, Debug, Hash)]
-#[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
-pub enum EntryKind {
-    File,
-    Directory,
-    Unknown
-}
-
-#[cfg(feature = "entry-kind")]
-impl EntryKind {
-    /// Returns the entry kind of the supplied path
-    pub fn from_path<T: AsRef<std::path::Path>>(path: &T) -> Self {
-        let path = path.as_ref();
-        if path.is_file() {
-            crate::components::merkle_path::EntryKind::File
-        } else if path.is_dir() {
-            crate::components::merkle_path::EntryKind::Directory
-        } else {
-            crate::components::merkle_path::EntryKind::Unknown
-        }
-    }
-}
+#[cfg(feature = "kind")]
+use crate::components::merkle_path_kind::MerklePathKind;
 
 /// A utility struct that contains an absolute path and a relative path
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
@@ -41,8 +19,8 @@ pub struct MerklePath {
     #[cfg(not(feature = "camino"))]
     pub absolute: std::path::PathBuf,
 
-    #[cfg(feature = "entry-kind")]
-    pub kind: EntryKind
+    #[cfg(feature = "kind")]
+    pub kind: MerklePathKind
 }
 
 impl MerklePath {
@@ -57,13 +35,13 @@ impl MerklePath {
         #[cfg(not(feature = "camino"))]
         absolute_path: std::path::PathBuf,
 
-        #[cfg(feature = "entry-kind")]
-        kind: EntryKind
+        #[cfg(feature = "kind")]
+        kind: MerklePathKind
     ) -> Self {
         Self {
             relative: relative_path,
             absolute: absolute_path,
-            #[cfg(feature = "entry-kind")]
+            #[cfg(feature = "kind")]
             kind
         }
     }

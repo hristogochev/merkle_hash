@@ -30,7 +30,7 @@ merkle_hash = "3.8"
 * `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 * `bincode` - Disabled by default, this feature enables bincode support.
-* `entry-kind` - Disabled by default, this feature adds a field to nodes identifying if they represent a file, directory, or other.
+* `kind` - Disabled by default, this feature adds a field to nodes identifying if they represent a file, directory, or other.
 
 # Example: Get the master hash of a directory tree:
 ```rust,no_run,ignore
@@ -70,9 +70,8 @@ pub use camino;
 #[cfg(feature = "parallel")]
 pub use rayon;
 
-#[cfg(feature = "entry-kind")]
-pub use components::merkle_path::EntryKind;
-
+#[cfg(feature = "kind")]
+pub use components::merkle_path_kind::MerklePathKind;
 pub use components::merkle_item::MerkleItem;
 pub use components::merkle_path::MerklePath;
 pub use iters::merkle_node_into_iter::MerkleNodeIntoIter;
