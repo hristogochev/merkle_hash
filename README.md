@@ -68,7 +68,7 @@ let tree = MerkleTree::builder("/path/to/directory").build()?;
 let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ```
 ### Release notes for 3.9
- * A new optionally enabled "kind" field for paths by [catpouch](https://github.com/catpouch).
+ * A new optionally enabled `kind` field for paths by [catpouch](https://github.com/catpouch).
  * Update library to rust edition 2024.
  * Update sha2 library to version 0.11.
 
