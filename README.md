@@ -30,8 +30,9 @@ merkle_hash = "3.8"
 * `camino` - Enabled by default, this feature makes all paths UTF-8 validated.
 * `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
+* `kind` - Disabled by default, this feature adds a kind field to paths.
 * `bincode` - Disabled by default, this feature enables bincode support.
-* `kind` - Disabled by default, this feature adds a field to nodes identifying if they represent a file, directory, or other.
+
 
 ### Examples
 
