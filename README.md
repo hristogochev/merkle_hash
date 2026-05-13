@@ -33,7 +33,6 @@ merkle_hash = "3.8"
 * `kind` - Disabled by default, this feature adds a kind field to paths.
 * `bincode` - Disabled by default, this feature enables bincode support.
 
-
 ### Examples
 
 Get the master hash of a directory tree:
