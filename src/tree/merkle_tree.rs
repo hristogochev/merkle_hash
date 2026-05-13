@@ -25,7 +25,7 @@ impl MerkleTree {
         }
     }
     /// Returns an iterator over each file and directory in the tree
-    pub fn iter(&self) -> MerkleNodeIter {
+    pub fn iter(&self) -> MerkleNodeIter<'_> {
         self.root.iter()
     }
 }
