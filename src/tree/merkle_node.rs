@@ -35,16 +35,10 @@ impl MerkleNode {
     /// Creates a new root node
     pub fn root(root: &str, hash_names: bool, algorithm: Algorithm) -> Result<Self, IndexingError> {
         // Creates a new empty relative path, as this is the root
-        #[cfg(not(feature = "camino"))]
         let relative_path = std::path::PathBuf::from("");
-        #[cfg(feature = "camino")]
-        let relative_path = camino::Utf8PathBuf::from("");
 
         // Gets an owned copy of the absolute path
-        #[cfg(not(feature = "camino"))]
         let absolute_path = std::path::PathBuf::from(root);
-        #[cfg(feature = "camino")]
-        let absolute_path = camino::Utf8PathBuf::from(root);
 
         // Optionally, gets the kind of the path
         #[cfg(feature = "kind")]
@@ -91,12 +85,7 @@ impl MerkleNode {
                         }
                     };
 
-                    #[cfg(not(feature = "camino"))]
                     let absolute_path = entry.path();
-
-                    #[cfg(feature = "camino")]
-                    let absolute_path = camino::Utf8PathBuf::from_path_buf(entry.path())
-                        .map_err(IndexingError::PathIsNotValidUtf8)?;
 
                     let relative_path = match absolute_path.strip_prefix(root) {
                         Ok(relative_path) => relative_path.to_path_buf(),
@@ -155,7 +144,6 @@ impl MerkleNode {
                 Some(name) => name,
             };
 
-            #[cfg(not(feature = "camino"))]
             let name = match name.to_str() {
                 None => return Err(IndexingError::UnableToReadFileName(path.absolute)),
                 Some(name) => name,

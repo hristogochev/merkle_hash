@@ -6,14 +6,7 @@ use crate::components::merkle_path_kind::MerklePathKind;
 /// A utility struct that contains an absolute path and a relative path
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 pub struct MerklePath {
-    #[cfg(feature = "camino")]
-    pub relative: camino::Utf8PathBuf,
-    #[cfg(feature = "camino")]
-    pub absolute: camino::Utf8PathBuf,
-
-    #[cfg(not(feature = "camino"))]
     pub relative: std::path::PathBuf,
-    #[cfg(not(feature = "camino"))]
     pub absolute: std::path::PathBuf,
 
     #[cfg(feature = "kind")]
@@ -22,14 +15,7 @@ pub struct MerklePath {
 
 impl MerklePath {
     pub fn new(
-        #[cfg(feature = "camino")]
-        relative_path: camino::Utf8PathBuf,
-        #[cfg(feature = "camino")]
-        absolute_path: camino::Utf8PathBuf,
-
-        #[cfg(not(feature = "camino"))]
         relative_path: std::path::PathBuf,
-        #[cfg(not(feature = "camino"))]
         absolute_path: std::path::PathBuf,
 
         #[cfg(feature = "kind")]

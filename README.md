@@ -27,7 +27,6 @@ merkle_hash = "3.9"
 
 * `sha` - Add this cargo feature to include `SHA-256` and `SHA-512` as hashing algorithms.
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
-* `camino` - Enabled by default, this feature makes all paths UTF-8 validated.
 * `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 * `kind` - Disabled by default, this feature adds a kind field to paths.
@@ -80,7 +79,6 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 ### Used technologies
 
 * [rayon](https://crates.io/crates/rayon) for multithreaded directory reading and hashing.
-* [camino](https://crates.io/crates/camino) to ensure that paths are always utf-8.
 * [blake3](https://crates.io/crates/blake3) for the blake3 hashing of file contents.
 * [sha2](https://crates.io/crates/sha2) for the sha256 and sha512 hashing of file contents.
 

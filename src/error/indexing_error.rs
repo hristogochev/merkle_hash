@@ -2,32 +2,14 @@ use std::fmt::{Display, Formatter};
 use std::io;
 use std::path::{PathBuf, StripPrefixError};
 
- #[cfg(feature = "camino")]
-use camino::Utf8PathBuf;
-
 /// Types of errors that can occur when recursively indexing a directory for its hashes.
 #[derive(Debug)]
 pub enum IndexingError {
     PathIsNotValidUtf8(PathBuf),
-     #[cfg(feature = "camino")]
-    UnableToReadFileName(Utf8PathBuf),
-     #[cfg(feature = "camino")]
-    UnableToReadFile(Utf8PathBuf, io::Error),
-     #[cfg(feature = "camino")]
-    UnableToReadDir(Utf8PathBuf, io::Error),
-     #[cfg(feature = "camino")]
-    UnableToReadDirEntry(Utf8PathBuf, io::Error),
-     #[cfg(feature = "camino")]
-     UnableToStripRootPrefix(Utf8PathBuf, String, StripPrefixError),
-     #[cfg(not(feature = "camino"))]
     UnableToReadFileName(PathBuf),
-     #[cfg(not(feature = "camino"))]
     UnableToReadFile(PathBuf, io::Error),
-     #[cfg(not(feature = "camino"))]
     UnableToReadDir(PathBuf, io::Error),
-     #[cfg(not(feature = "camino"))]
     UnableToReadDirEntry(PathBuf, io::Error),
-     #[cfg(not(feature = "camino"))]
     UnableToStripRootPrefix(PathBuf, String, StripPrefixError),
 }
 
@@ -58,6 +40,3 @@ impl Display for IndexingError {
 
 
 impl std::error::Error for IndexingError {}
-
-
-
