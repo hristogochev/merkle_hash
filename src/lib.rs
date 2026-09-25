@@ -28,7 +28,6 @@ merkle_hash = "3.9"
 * `parallel` - Enabled by default, this feature makes the crate utilize all available threads.
 * `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
-* `kind` - Disabled by default, this feature adds a kind field to paths.
 
 # Example: Get the master hash of a directory tree:
 ```rust,no_run,ignore
@@ -66,7 +65,6 @@ pub use blake3;
 #[cfg(feature = "parallel")]
 pub use rayon;
 
-#[cfg(feature = "kind")]
 pub use components::merkle_path_kind::MerklePathKind;
 pub use components::merkle_item::MerkleItem;
 pub use components::merkle_path::MerklePath;
