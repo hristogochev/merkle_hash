@@ -4,7 +4,6 @@ use crate::components::merkle_path::MerklePath;
 
 /// Holds the path, hash and children paths of a file or directory
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
-#[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
 pub struct MerkleItem {
     pub path: MerklePath,
     pub hash: Vec<u8>,

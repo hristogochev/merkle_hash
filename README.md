@@ -31,7 +31,6 @@ merkle_hash = "3.9"
 * `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 * `kind` - Disabled by default, this feature adds a kind field to paths.
-* `bincode` - Disabled by default, this feature enables bincode support.
 
 ### Examples
 
@@ -84,7 +83,6 @@ let btree_set: BTreeSet<MerkleItem> = tree.into_iter().collect();
 * [camino](https://crates.io/crates/camino) to ensure that paths are always utf-8.
 * [blake3](https://crates.io/crates/blake3) for the blake3 hashing of file contents.
 * [sha2](https://crates.io/crates/sha2) for the sha256 and sha512 hashing of file contents.
-* [bincode](https://crates.io/crates/bincode) for bincode serialization / deserialization.
 
 ### License
 

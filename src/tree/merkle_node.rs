@@ -14,7 +14,6 @@ use crate::utils::algorithm::Algorithm;
 
 /// Represents a single node on the merkle tree
 #[derive(Eq, PartialEq, Debug, Clone)]
-#[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
 pub struct MerkleNode {
     pub item: MerkleItem,
     pub children: BTreeSet<MerkleNode>,

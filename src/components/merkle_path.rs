@@ -5,15 +5,12 @@ use crate::components::merkle_path_kind::MerklePathKind;
 
 /// A utility struct that contains an absolute path and a relative path
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
-#[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
 pub struct MerklePath {
     #[cfg(feature = "camino")]
-    #[cfg_attr(feature = "bincode", bincode(with_serde))]
     pub relative: camino::Utf8PathBuf,
     #[cfg(feature = "camino")]
-    #[cfg_attr(feature = "bincode", bincode(with_serde))]
     pub absolute: camino::Utf8PathBuf,
-    
+
     #[cfg(not(feature = "camino"))]
     pub relative: std::path::PathBuf,
     #[cfg(not(feature = "camino"))]

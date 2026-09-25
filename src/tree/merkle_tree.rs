@@ -6,7 +6,6 @@ use crate::tree::merkle_tree_builder::MerkleTreeBuilder;
 use crate::utils::algorithm::Algorithm;
 
 /// Represents an indexed directory tree
-#[cfg_attr(feature = "bincode", derive(bincode::Decode, bincode::Encode))]
 pub struct MerkleTree {
     pub root: MerkleNode,
 }

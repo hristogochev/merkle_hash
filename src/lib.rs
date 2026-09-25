@@ -30,7 +30,6 @@ merkle_hash = "3.9"
 * `encode` - Enabled by default, this feature adds the `bytes_to_hex` and `to_hex_string` functions.
 * `retain` - Disabled by default, this feature duplicates the children paths of directories upon traversal.
 * `kind` - Disabled by default, this feature adds a kind field to paths.
-* `bincode` - Disabled by default, this feature enables bincode support.
 
 # Example: Get the master hash of a directory tree:
 ```rust,no_run,ignore
