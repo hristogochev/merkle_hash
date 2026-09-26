@@ -1,42 +1,69 @@
 use std::fmt::{Display, Formatter};
-use std::io;
 use std::path::{PathBuf, StripPrefixError};
 
 /// Types of errors that can occur when recursively indexing a directory for its hashes.
 #[derive(Debug)]
 pub enum IndexingError {
-    PathIsNotValidUtf8(PathBuf),
-    UnableToReadFileName(PathBuf),
-    UnableToReadFile(PathBuf, io::Error),
-    UnableToReadDir(PathBuf, io::Error),
-    UnableToReadDirEntry(PathBuf, io::Error),
-    UnableToStripRootPrefix(PathBuf, String, StripPrefixError),
+    UnableToReadFileName {
+        absolute_path: PathBuf,
+    },
+    UnableToReadFile {
+        absolute_path: PathBuf,
+        source: std::io::Error,
+    },
+    UnableToReadDir {
+        absolute_path: PathBuf,
+        source: std::io::Error,
+    },
+    UnableToReadDirEntry {
+        parent_absolute_path: PathBuf,
+        source: std::io::Error,
+    },
+    UnableToStripRootPrefix {
+        absolute_path: PathBuf,
+        root: String,
+        source: StripPrefixError,
+    },
 }
 
 impl Display for IndexingError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            IndexingError::PathIsNotValidUtf8(path) => {
-                write!(f, "Path is not valid UTF8 path: {:?}", path)
+            IndexingError::UnableToReadFileName { absolute_path } => {
+                write!(f, "Unable to read file name: {:?}", absolute_path)
             }
-            IndexingError::UnableToReadFileName(path) => {
-                write!(f, "Unable to read file name: {:?}", path)
+            IndexingError::UnableToReadFile { absolute_path, source } => {
+                write!(f, "Unable to read file: {:?}, error: {}", absolute_path, source)
             }
-            IndexingError::UnableToReadFile(path, error) => {
-                write!(f, "Unable to read file: {:?}, error: {}", path, error)
+            IndexingError::UnableToReadDir {
+                absolute_path,
+                source,
+            } => {
+                write!(f, "Unable to read dir: {:?}, error: {}", absolute_path, source)
             }
-            IndexingError::UnableToReadDir(path, error) => {
-                write!(f, "Unable to read dir: {:?}, error: {}", path, error)
+            IndexingError::UnableToReadDirEntry {
+                parent_absolute_path,
+                source,
+            } => {
+                write!(
+                    f,
+                    "Unable to read dir entry in dir: {:?}, error: {}",
+                    parent_absolute_path, source
+                )
             }
-            IndexingError::UnableToReadDirEntry(path, error) => {
-                write!(f, "Unable to read dir entry in dir: {:?}, error: {}", path, error)
-            }
-            IndexingError::UnableToStripRootPrefix(path, root, error) => {
-                write!(f, "Unable to strip root prefix for path: {:?}, where root: {}, error: {}", path, root, error)
+            IndexingError::UnableToStripRootPrefix {
+                absolute_path,
+                root,
+                source,
+            } => {
+                write!(
+                    f,
+                    "Unable to strip root prefix for path: {:?}, where root: {}, error: {}",
+                    absolute_path, root, source
+                )
             }
         }
     }
 }
-
 
 impl std::error::Error for IndexingError {}

@@ -64,7 +64,12 @@ impl MerkleNode {
         let children = if path.absolute.is_dir() {
             let read_dir = match fs::read_dir(&path.absolute) {
                 Ok(ok) => ok,
-                Err(err) => return Err(IndexingError::UnableToReadDir(path.absolute, err)),
+                Err(source) => {
+                    return Err(IndexingError::UnableToReadDir {
+                        absolute_path: path.absolute,
+                        source,
+                    });
+                }
             };
 
             #[cfg(feature = "parallel")]
@@ -74,11 +79,11 @@ impl MerkleNode {
                 .map(|entry| {
                     let entry = match entry {
                         Ok(entry) => entry,
-                        Err(err) => {
-                            return Err(IndexingError::UnableToReadDirEntry(
-                                path.absolute.clone(),
-                                err,
-                            ));
+                        Err(source) => {
+                            return Err(IndexingError::UnableToReadDirEntry {
+                                parent_absolute_path: path.absolute.clone(),
+                                source,
+                            });
                         }
                     };
 
@@ -86,12 +91,12 @@ impl MerkleNode {
 
                     let relative_path = match absolute_path.strip_prefix(root) {
                         Ok(relative_path) => relative_path.to_path_buf(),
-                        Err(err) => {
-                            return Err(IndexingError::UnableToStripRootPrefix(
+                        Err(source) => {
+                            return Err(IndexingError::UnableToStripRootPrefix {
                                 absolute_path,
-                                root.to_string(),
-                                err,
-                            ));
+                                root: root.to_string(),
+                                source,
+                            });
                         }
                     };
 
@@ -125,7 +130,12 @@ impl MerkleNode {
         } else {
             let file_bytes = match fs::read(&path.absolute) {
                 Ok(file_bytes) => file_bytes,
-                Err(err) => return Err(IndexingError::UnableToReadFile(path.absolute, err)),
+                Err(source) => {
+                    return Err(IndexingError::UnableToReadFile {
+                        absolute_path: path.absolute,
+                        source,
+                    });
+                }
             };
 
             algorithm.compute_hash(&file_bytes)
@@ -135,12 +145,20 @@ impl MerkleNode {
         let hash: Vec<u8> = if hash_names {
             // Gets the node path's name
             let name = match path.absolute.file_name() {
-                None => return Err(IndexingError::UnableToReadFileName(path.absolute)),
+                None => {
+                    return Err(IndexingError::UnableToReadFileName {
+                        absolute_path: path.absolute,
+                    });
+                }
                 Some(name) => name,
             };
 
             let name = match name.to_str() {
-                None => return Err(IndexingError::UnableToReadFileName(path.absolute)),
+                None => {
+                    return Err(IndexingError::UnableToReadFileName {
+                        absolute_path: path.absolute,
+                    });
+                }
                 Some(name) => name,
             };
 
