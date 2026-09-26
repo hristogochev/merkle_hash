@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::BTreeSet;
 use std::fs;
+use std::path::PathBuf;
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -39,11 +40,13 @@ impl MerkleNode {
         // Gets an owned copy of the absolute path
         let absolute_path = std::path::PathBuf::from(root);
 
+        let parent_relative_path = relative_path.parent().map(PathBuf::from);
+
         // Optionally, gets the kind of the path
         let kind = MerklePathKind::from_path(&absolute_path);
 
         // Creates a new merkle path based on them both
-        let path = MerklePath::new(relative_path, absolute_path, kind);
+        let path = MerklePath::new(relative_path, absolute_path, parent_relative_path, kind);
 
         // Indexes the newly created node and returns the result
         Self::index(root, path, hash_names, &algorithm)
@@ -75,7 +78,7 @@ impl MerkleNode {
                             return Err(IndexingError::UnableToReadDirEntry(
                                 path.absolute.clone(),
                                 err,
-                            ))
+                            ));
                         }
                     };
 
@@ -88,13 +91,16 @@ impl MerkleNode {
                                 absolute_path,
                                 root.to_string(),
                                 err,
-                            ))
+                            ));
                         }
                     };
 
+                    let parent_relative_path = relative_path.parent().map(PathBuf::from);
+
                     let kind = MerklePathKind::from_path(&absolute_path);
 
-                    let path = MerklePath::new(relative_path, absolute_path, kind);
+                    let path =
+                        MerklePath::new(relative_path, absolute_path, parent_relative_path, kind);
 
                     let node = Self::index(root, path, hash_names, algorithm)?;
 

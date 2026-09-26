@@ -7,6 +7,7 @@ use crate::components::merkle_path_kind::MerklePathKind;
 pub struct MerklePath {
     pub relative: std::path::PathBuf,
     pub absolute: std::path::PathBuf,
+    pub parent_relative: Option<std::path::PathBuf>,
     pub kind: MerklePathKind
 }
 
@@ -14,11 +15,13 @@ impl MerklePath {
     pub fn new(
         relative_path: std::path::PathBuf,
         absolute_path: std::path::PathBuf,
+        parent_relative_path: Option<std::path::PathBuf>,
         kind: MerklePathKind
     ) -> Self {
         Self {
             relative: relative_path,
             absolute: absolute_path,
+            parent_relative: parent_relative_path,
             kind
         }
     }
